@@ -1,0 +1,29 @@
+#include "MainFrame.h"
+#include "Data Structures/Graph.h"
+#include "UI/Panels/CustomPanels.h"
+
+using namespace std;
+
+MainFrame::MainFrame(const wxString &title) : wxFrame(nullptr, wxID_ANY, title)
+{
+}
+
+void MainFrame::Initialize()
+{
+	CustomPanels customPanels;
+
+	if (view == "HANDLER")
+	{
+		customPanels.CallHandlerPanel(this);
+	}
+
+	if (view == "RESPONDER")
+	{
+		customPanels.EmergencyResponderPanel(this);
+	}
+
+	if (view == "HOSPITAL")
+	{
+		customPanels.HospitalAdminPanel(this);
+	}
+}
