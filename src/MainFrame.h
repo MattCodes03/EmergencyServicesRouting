@@ -1,5 +1,6 @@
 #pragma once
 #include <wx/wx.h>
+#include "Types/User.h"
 #include <string>
 
 using namespace std;
@@ -12,6 +13,15 @@ public:
 	void Initialize();
 
 	void SetViewType(string v) { view = v; }
+
+	void SetActiveUser(User user)
+	{
+		delete activeUser;
+
+		this->activeUser = new User(user.getUsername());
+	}
+
+	User *activeUser;
 
 private:
 	string view;

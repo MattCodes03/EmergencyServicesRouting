@@ -5,10 +5,13 @@ class CallHandler : User
 public:
     CallHandler(const string &username, const string &firstname, const string &lastname);
 
-    void acceptEmergency();
-    void prioritiseEmergency();
-    void sendMessage();
+    void AcceptEmergency();
+    void PrioritiseEmergency();
+    void SendMessage();
+
+    string GetName() { return username; };
 
     string firstname;
     string lastname;
+    string username;
 };

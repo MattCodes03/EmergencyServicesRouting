@@ -1,7 +1,5 @@
 #pragma once
 #include <wx/wx.h>
-#include <wx/bitmap.h>
-#include <wx/image.h>
 
 class Map : public wxPanel
 {

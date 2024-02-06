@@ -12,6 +12,7 @@ public:
     bool login(const string &username, const string &password);
 
     string getRole() const { return role; };
+    string getUsername() const { return username; };
 
 private:
     string username;

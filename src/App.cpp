@@ -38,6 +38,7 @@ bool App::OnInit()
             {
                 loggedIn = true;
                 mainFrame->SetViewType(user.getRole());
+                mainFrame->SetActiveUser(user);
                 mainFrame->Initialize();
             }
             else

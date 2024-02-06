@@ -1,5 +1,4 @@
 #include "CustomPanels.h"
-#include "../Elements/Map.h"
 
 BEGIN_EVENT_TABLE(Map, wxPanel)
 EVT_PAINT(Map::OnPaint)
@@ -7,6 +6,10 @@ END_EVENT_TABLE()
 
 void CustomPanels::CallHandlerPanel(wxWindow *parent)
 {
+
+    // Cast active user to CallHandler user type to allow access to member values and functions
+    // auto userRef = any_cast<CallHandler>(user);
+
     wxFont titleFont(wxFontInfo(wxSize(0, 36)).Bold());
     wxFont mainFont(wxFontInfo(wxSize(0, 24)));
 
@@ -18,7 +21,7 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
     // Adding a sizer to manage layout
     wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 
-    wxStaticText *text = new wxStaticText(panel, wxID_ANY, "Call Handler View");
+    wxStaticText *text = new wxStaticText(panel, wxID_ANY, any_cast<CallHandler>(user).GetName());
     text->SetFont(mainFont);
 
     // Adding the text to the sizer
