@@ -9,7 +9,7 @@ public:
     void PrioritiseEmergency();
     void SendMessage();
 
-    string GetName() { return username; };
+    string GetName() { return firstname + " " + lastname; };
 
     string firstname;
     string lastname;

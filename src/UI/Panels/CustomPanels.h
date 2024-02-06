@@ -16,21 +16,21 @@ public:
     void CallHandlerPanel(wxWindow *parent);
     void HospitalAdminPanel(wxWindow *parent);
 
-    void InitialiseUser(string type, User *activeUser)
+    void InitialiseUser(const std::string &type, User &activeUser)
     {
         if (type == "HANDLER")
         {
-            user = new CallHandler(activeUser->getUsername(), "Matthew", "McCann");
+            user = make_any<CallHandler>(activeUser.getUsername(), "Matthew", "McCann");
         }
 
         if (type == "RESPONDER")
         {
-            user = new EmergencyResponder(activeUser->getUsername(), 12);
+            user = make_any<EmergencyResponder>(activeUser.getUsername(), 12);
         }
 
         if (type == "HOPSITAL")
         {
-            user = new HospitalAdmin(activeUser->getUsername());
+            user = std::make_any<HospitalAdmin>(activeUser.getUsername());
         }
     }
 

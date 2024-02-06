@@ -7,8 +7,7 @@ END_EVENT_TABLE()
 void CustomPanels::CallHandlerPanel(wxWindow *parent)
 {
 
-    // Cast active user to CallHandler user type to allow access to member values and functions
-    // auto userRef = any_cast<CallHandler>(user);
+    auto userRef = std::any_cast<CallHandler>(user);
 
     wxFont titleFont(wxFontInfo(wxSize(0, 36)).Bold());
     wxFont mainFont(wxFontInfo(wxSize(0, 24)));
@@ -21,7 +20,7 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
     // Adding a sizer to manage layout
     wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 
-    wxStaticText *text = new wxStaticText(panel, wxID_ANY, any_cast<CallHandler>(user).GetName());
+    wxStaticText *text = new wxStaticText(panel, wxID_ANY, userRef.GetName());
     text->SetFont(mainFont);
 
     // Adding the text to the sizer
