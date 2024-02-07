@@ -2,4 +2,4 @@
 
 ## Prerequisites
 - [WxWidgets](https://github.com/wxWidgets/wxWidgets)
-- [SQLiteCpp](https://github.com/SRombauts/SQLiteCp)
+- [SQLiteCpp](https://github.com/SRombauts/SQLiteCpp)
