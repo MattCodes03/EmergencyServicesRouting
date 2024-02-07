@@ -24,5 +24,7 @@ bool User::login(const string &username, const string &password)
         }
     }
 
+    delete db;
+
     return false;
 }

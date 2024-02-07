@@ -2,6 +2,7 @@
 #include <wx/wx.h>
 #include "Types/User.h"
 #include <string>
+#include <memory>
 
 using namespace std;
 
@@ -14,14 +15,12 @@ public:
 
 	void SetViewType(string v) { view = v; }
 
-	void SetActiveUser(User user)
+	void SetActiveUser(const User& user)
 	{
-		delete activeUser;
-
-		this->activeUser = new User(user.getUsername());
+		activeUser = make_unique<User>(user.getUsername());
 	}
 
-	User *activeUser;
+	unique_ptr<User> activeUser;
 
 private:
 	string view;

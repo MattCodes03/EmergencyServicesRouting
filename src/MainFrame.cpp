@@ -6,6 +6,7 @@ using namespace std;
 
 MainFrame::MainFrame(const wxString &title) : wxFrame(nullptr, wxID_ANY, title)
 {
+wxInitAllImageHandlers();
 }
 
 void MainFrame::Initialize()

@@ -1,7 +1,7 @@
 #include "LoginDialog.h"
 
 BEGIN_EVENT_TABLE(LoginDialog, wxDialog)
-EVT_UPDATE_UI(wxID_OK, onUpdateOKButton)
+EVT_UPDATE_UI(wxID_OK,LoginDialog::onUpdateOKButton)
 END_EVENT_TABLE()
 
 LoginDialog::LoginDialog(wxWindow *parent, wxWindowID id,

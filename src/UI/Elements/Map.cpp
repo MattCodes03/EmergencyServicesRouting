@@ -2,7 +2,6 @@
 
 void Map::OnPaint(wxPaintEvent &event)
 {
-    wxInitAllImageHandlers();
     wxPaintDC dc(this);
 
     // Load the PNG image

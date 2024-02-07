@@ -3,17 +3,18 @@
 #include "UI/LoginDialog.h"
 #include "Server/Database.h"
 #include "Types/User.h"
+#include <memory>
 
 wxIMPLEMENT_APP(App);
 
 bool App::OnInit()
 {
     // Initialise the Database
-    Database *database = new Database();
-    database->InitializeDatabase();
+   std::unique_ptr<Database> database = std::make_unique<Database>();
+   database->InitializeDatabase();
 
     // Setup the GUI
-    MainFrame *mainFrame = new MainFrame("Emergency Services Routing");
+    std::unique_ptr<MainFrame> mainFrame = std::make_unique<MainFrame>("Emergency Services Routing");
     mainFrame->SetClientSize(800, 600);
     mainFrame->SetMinSize(mainFrame->GetSize());
     mainFrame->SetMaxSize(mainFrame->GetSize());
@@ -21,7 +22,7 @@ bool App::OnInit()
     mainFrame->Show();
 
     // Display the Login Modal allowing the user to log into the app, this process will result in the user been shown the correct dashboard based on their credentials.
-    LoginDialog login(mainFrame, wxID_ANY, _("Login"));
+    LoginDialog login(mainFrame.get(), wxID_ANY, _("Login"));
     login.Center();
     /*
     1. Create a User instance with the inputted username and password
@@ -44,10 +45,11 @@ bool App::OnInit()
             else
             {
                 cout << "Failed to login!" << endl;
-                login.ShowModal();
             }
         }
     };
+
+    MainFrame* rawMainFrame = mainFrame.release();
 
     return true;
 }
