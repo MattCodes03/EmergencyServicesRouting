@@ -5,8 +5,8 @@ using namespace std;
 
 bool User::login(const string &username, const string &password)
 {
-    // Get reference to the Database
-    Database *db = new Database();
+    // Get reference to Database
+    std::unique_ptr<Database> db = std::make_unique<Database>();
 
     // Perform a Search through the Database to see if the entered Username exists, if it does we then compare the passwords.
     SQLite::Statement query(*db->database, "SELECT * FROM users WHERE username = ?");
@@ -23,8 +23,6 @@ bool User::login(const string &username, const string &password)
             return true;
         }
     }
-
-    delete db;
 
     return false;
 }

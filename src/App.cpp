@@ -7,14 +7,16 @@
 
 wxIMPLEMENT_APP(App);
 
+using namespace std;
+
 bool App::OnInit()
 {
-    // Initialise the Database
-   std::unique_ptr<Database> database = std::make_unique<Database>();
-   database->InitializeDatabase();
+    // Initialise the Database - Using Smart Pointers here to prevent memory leaks.
+    unique_ptr<Database> database = make_unique<Database>();
+    database->InitializeDatabase();
 
     // Setup the GUI
-    std::unique_ptr<MainFrame> mainFrame = std::make_unique<MainFrame>("Emergency Services Routing");
+    unique_ptr<MainFrame> mainFrame = make_unique<MainFrame>("Emergency Services Routing");
     mainFrame->SetClientSize(800, 600);
     mainFrame->SetMinSize(mainFrame->GetSize());
     mainFrame->SetMaxSize(mainFrame->GetSize());
@@ -27,7 +29,7 @@ bool App::OnInit()
     /*
     1. Create a User instance with the inputted username and password
     2. Call the User Login Method, this will determione if the input data is correct
-    3. Create specific user i.e. CallHandler, EmergencyResponder and then run the software with access to this users methods. (NOT SURE HOW TO DO THIS YET!)
+    3. Set an active user instance within MainFrame, this is then handled and user is created with correct class i.e. CallHandler, EmergencyResponder
     */
     bool loggedIn = false;
     User user((string)login.getUsername());
@@ -49,7 +51,7 @@ bool App::OnInit()
         }
     };
 
-    MainFrame* rawMainFrame = mainFrame.release();
+    MainFrame *rawMainFrame = mainFrame.release();
 
     return true;
 }
