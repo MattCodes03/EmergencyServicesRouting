@@ -27,7 +27,7 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
     // Adding the text to the sizer
     sizer->Add(text, 0, wxALIGN_CENTER | wxALL, 10);
 
-    Graph graph(50, 42);
+    Graph graph(10, 42);
     Map *map = new Map(panel, graph);
     sizer->Add(map, 1, wxEXPAND);
 
