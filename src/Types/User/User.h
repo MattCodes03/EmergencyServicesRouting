@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "../Server/Database.h"
+#include "../../Server/Database.h"
 
 using namespace std;
 

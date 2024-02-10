@@ -2,7 +2,7 @@
 #include "MainFrame.h"
 #include "UI/LoginDialog.h"
 #include "Server/Database.h"
-#include "Types/User.h"
+#include "Types/User/User.h"
 #include <memory>
 
 wxIMPLEMENT_APP(App);

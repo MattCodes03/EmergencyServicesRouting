@@ -1,11 +1,20 @@
 #pragma once
 #include <vector>
+#include <any>
 #include "Node.h"
+
+using namespace std;
 
 class Graph
 {
 public:
-    Graph(int numNodes) : adjacencyList(numNodes) {}
+    Graph(int numNodes, const any &defaultData) : adjacencyList(numNodes), nodes(numNodes)
+    {
+        for (int i = 0; i < numNodes; ++i)
+        {
+            nodes[i] = Node(i, defaultData);
+        }
+    }
 
     /*
     Function will add edge to the graph.
@@ -15,6 +24,14 @@ public:
      */
     void AddEdge(int source, int destination, int weight);
 
+    void AddNode(const Node &node);
+
+    void Display();
+
+    vector<Node> GetNodes() const { return this->nodes; };
+    vector<vector<pair<int, int>>> GetAdjacencyList() const { return this->adjacencyList; };
+
 private:
-    vector<vector<Node>> adjacencyList;
+    vector<vector<pair<int, int>>> adjacencyList;
+    vector<Node> nodes;
 };

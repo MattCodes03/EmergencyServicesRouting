@@ -1,6 +1,6 @@
 #pragma once
 #include <wx/wx.h>
-#include "Types/User.h"
+#include "Types/User/User.h"
 #include <string>
 #include <memory>
 
@@ -15,7 +15,7 @@ public:
 
 	void SetViewType(string v) { view = v; }
 
-	void SetActiveUser(const User& user)
+	void SetActiveUser(const User &user)
 	{
 		activeUser = make_unique<User>(user.getUsername());
 	}

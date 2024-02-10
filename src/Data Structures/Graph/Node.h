@@ -6,20 +6,21 @@ using namespace std;
 class Node
 {
 public:
-	Node(int id, int weight) : id(id), weight(weight){};
+	Node() : id(-1), data() {} // Default constructor
 
-	void SetData(any &data)
-	{
-		this->Data = data;
-	};
+	Node(int id, const any &data) : id(id), data(data){};
 
-	int GetWeight()
+	int GetID()
 	{
-		return this->weight;
-	};
+		return this->id;
+	}
+
+	const std::any &GetData() const
+	{
+		return this->data;
+	}
 
 private:
-	any Data;
-	int weight;
 	int id;
+	any data;
 };

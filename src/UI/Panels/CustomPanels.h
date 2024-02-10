@@ -2,9 +2,9 @@
 #include <wx/wx.h>
 #include <any>
 #include <string>
-#include "../../Types/CallHandler.h"
-#include "../../Types/EmergencyResponder.h"
-#include "../../Types/HospitalAdmin.h"
+#include "../../Types/User/CallHandler.h"
+#include "../../Types/User/EmergencyResponder.h"
+#include "../../Types/User/HospitalAdmin.h"
 #include "../Elements/Map.h"
 
 class CustomPanels

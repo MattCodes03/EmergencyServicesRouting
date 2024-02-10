@@ -16,34 +16,60 @@ void Map::OnPaint(wxPaintEvent &event)
     // Draw the PNG image on the DC
     dc.DrawBitmap(pngBitmap, 0, 0, true);
 
-    // DrawGrid(dc);
+    SetupGraph();
+    DrawGraph(dc);
 };
 
-void Map::DrawGrid(wxDC &dc)
+void Map::DrawNode(wxDC &dc, const Ambulance &nodeRef)
 {
-    // Get the size of the canvas
-    wxSize size = GetClientSize();
+    int x = nodeRef.location.first;
+    int y = nodeRef.location.second;
 
-    // Define the number of rows and columns for your grid
-    int numRows = 10;
-    int numCols = 10;
-
-    // Calculate cell size
-    int cellWidth = size.x / numCols;
-    int cellHeight = size.y / numRows;
-
-    // Draw the grid
-    for (int row = 0; row < numRows; ++row)
+    if (nodeRef.status)
     {
-        for (int col = 0; col < numCols; ++col)
-        {
-            int x = col * cellWidth;
-            int y = row * cellHeight;
-
-            // Draw a rectangle for each cell
-            dc.DrawRectangle(x, y, cellWidth, cellHeight);
-
-            // You can add more drawing logic based on your map data here
-        }
+        dc.SetBrush(*wxBLUE_BRUSH);
+        dc.SetPen(wxPen(wxColor(0, 0, 255), 2));
+        dc.DrawCircle(x, y, 5);
     }
+}
+
+void Map::DrawNode(wxDC &dc, const Emergency &nodeRef)
+{
+    int x = nodeRef.location.first;
+    int y = nodeRef.location.second;
+
+    dc.SetBrush(*wxRED_BRUSH);
+    dc.SetPen(wxPen(wxColor(255, 0, 0), 2));
+    dc.DrawCircle(x, y, 5);
+}
+
+void Map::SetupGraph()
+{
+    unique_ptr<Database> database = make_unique<Database>();
+
+    for (Emergency emergency : database->GetEmergencies())
+    {
+        graph.AddNode(Node(emergency.emergencyNumber, any_cast<Emergency>(emergency)));
+    };
+
+    for (Ambulance ambulance : database->GetAmbulances())
+    {
+        graph.AddNode(Node(ambulance.unitNumber, any_cast<Ambulance>(ambulance)));
+    };
+}
+
+void Map::DrawGraph(wxDC &dc)
+{
+
+    for (auto &node : graph.GetNodes())
+    {
+        if (node.GetData().type() == typeid(Emergency))
+        {
+            DrawNode(dc, any_cast<Emergency>(node.GetData()));
+        }
+        else if (node.GetData().type() == typeid(Ambulance))
+        {
+            DrawNode(dc, any_cast<Ambulance>(node.GetData()));
+        }
+    };
 };

@@ -1,12 +1,12 @@
 #include "MainFrame.h"
-#include "Data Structures/Graph.h"
+#include "Data Structures/Graph/Graph.h"
 #include "UI/Panels/CustomPanels.h"
 
 using namespace std;
 
 MainFrame::MainFrame(const wxString &title) : wxFrame(nullptr, wxID_ANY, title)
 {
-wxInitAllImageHandlers();
+	wxInitAllImageHandlers();
 }
 
 void MainFrame::Initialize()
