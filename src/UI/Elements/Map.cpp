@@ -56,6 +56,8 @@ void Map::SetupGraph()
     {
         graph.AddNode(Node(ambulance.unitNumber, any_cast<Ambulance>(ambulance)));
     };
+
+    graph.Display();
 }
 
 void Map::DrawGraph(wxDC &dc)
