@@ -10,14 +10,14 @@
 class Map : public wxPanel
 {
 public:
-    Map(wxWindow *parent, Graph &graph) : wxPanel(parent), graph(graph){};
+    Map(wxWindow *parent) : wxPanel(parent), graph(50, 42){};
 
     void OnPaint(wxPaintEvent &event);
 
     void SetupGraph();
 
 private:
-    Graph &graph;
+    Graph graph;
 
     void DrawGraph(wxDC &dc);
 
