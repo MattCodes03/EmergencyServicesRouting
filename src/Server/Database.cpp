@@ -55,10 +55,23 @@ void Database::GeneratePsuedoData()
 
 pair<int, int> Database::ConvertLocation(const string &location)
 {
-    istringstream iss(location);
-    char discard;
+    // Check if the format is correct
+    if (location.size() < 5 || location[0] != '(' || location[location.size() - 1] != ')' || location.find(',') == string::npos)
+    {
+        // Handle invalid format
+        throw std::runtime_error("Invalid location format: " + location);
+    }
+
+    // Extract coordinates from the format "(x, y)"
     int x, y;
-    iss >> discard >> x >> discard >> y >> discard;
+    char discard;
+    istringstream iss(location.substr(1, location.size() - 2)); // Exclude parentheses
+    if (!(iss >> x >> discard >> y) || discard != ',')
+    {
+        // Handle extraction failure
+        throw std::runtime_error("Invalid location format: " + location);
+    }
+
     return {x, y};
 };
 
@@ -68,7 +81,7 @@ vector<Emergency> Database::GetEmergencies()
     SQLite::Statement query(*database, "SELECT * FROM emergencies");
     while (query.executeStep())
     {
-        pair<int, int> location = ConvertLocation(query.getColumn(1));
+        pair<int, int> location = ConvertLocation((string)query.getColumn(1));
         bool respondedTo = query.getColumn(3).getInt() != 0;
         bool complete = query.getColumn(4).getInt() != 0;
 
@@ -84,7 +97,7 @@ vector<Ambulance> Database::GetAmbulances()
     SQLite::Statement query(*database, "SELECT * FROM ambulance");
     while (query.executeStep())
     {
-        pair<int, int> location = ConvertLocation(query.getColumn(1));
+        pair<int, int> location = ConvertLocation((string)query.getColumn(1));
         bool status = query.getColumn(2).getInt() != 0;
         bool available = query.getColumn(3).getInt() != 0;
         ambulances.push_back(Ambulance(query.getColumn(0), location, status, available));
