@@ -42,12 +42,12 @@ void Database::GeneratePsuedoData()
 
     // Fake Emergencies - Update this with better data once app development is further along.
     database->exec("INSERT INTO emergencies VALUES (1, \"(40, 150)\", 1, 0, 0, \"Test1\")");
-    database->exec("INSERT INTO emergencies VALUES (2, \"(500, 550)\", 1, 0, 0, \"Test2\")");
+    database->exec("INSERT INTO emergencies VALUES (2, \"(500, 550)\", 1, 0, 1, \"Test2\")");
     database->exec("INSERT INTO emergencies VALUES (3, \"(50, 60)\", 1, 0, 0, \"Test3\")");
 
     // Fake Ambulances
     database->exec("INSERT INTO ambulance VALUES (8, \"(50, 50)\", 1, 1, 0)");
-    database->exec("INSERT INTO ambulance VALUES (9, \"(60, 80)\", 1, 1, 0)");
+    database->exec("INSERT INTO ambulance VALUES (9, \"(60, 80)\", 1, 0, 0)");
 
     // Commit Transaction
     psuedoDataTransaction.commit();

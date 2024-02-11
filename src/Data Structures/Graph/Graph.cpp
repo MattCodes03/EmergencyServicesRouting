@@ -1,5 +1,6 @@
 #include "Graph.h"
 #include <iostream>
+#include <cmath>
 
 void Graph::AddEdge(int source, int destination, int weight)
 {
@@ -9,8 +10,19 @@ void Graph::AddEdge(int source, int destination, int weight)
 void Graph::AddNode(const Node &node)
 {
     nodes.emplace_back(node);
-    adjacencyList.emplace_back();
 };
+
+// Euclidean Distance Formula
+int Graph::CalculateDistance(pair<int, int> location1, pair<int, int> location2)
+{
+    return sqrt(pow(location1.first - location2.first, 2) + pow(location1.second - location2.second, 2));
+}
+
+void Graph::ClearGraph()
+{
+    this->nodes.clear();
+    this->adjacencyList.clear();
+}
 
 void Graph::Display()
 {

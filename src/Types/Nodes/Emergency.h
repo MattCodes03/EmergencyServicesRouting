@@ -12,12 +12,12 @@ public:
               int priority,
               string description,
               bool respondedTo,
-              bool complete) : emergencyNumber(emergencyNumber), location(location), priority(priority), description(description){};
+              bool complete) : emergencyNumber(emergencyNumber), location(location), priority(priority), description(description), respondedTo(respondedTo), complete(complete){};
 
     int emergencyNumber;
     pair<int, int> location;
     int priority;
     string description;
-    bool respondedTo = false;
-    bool complete = false;
+    bool respondedTo;
+    bool complete;
 };

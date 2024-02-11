@@ -28,6 +28,10 @@ public:
 
     void Display();
 
+    void ClearGraph();
+
+    int CalculateDistance(pair<int, int> location1, pair<int, int> location2);
+
     vector<Node> GetNodes() const { return this->nodes; };
     vector<vector<pair<int, int>>> GetAdjacencyList() const { return this->adjacencyList; };
 

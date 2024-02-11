@@ -25,7 +25,7 @@ void Map::DrawNode(wxDC &dc, const Ambulance &nodeRef)
     int x = nodeRef.location.first;
     int y = nodeRef.location.second;
 
-    if (nodeRef.status)
+    if (nodeRef.available)
     {
         dc.SetBrush(*wxBLUE_BRUSH);
         dc.SetPen(wxPen(wxColor(0, 0, 255), 2));
@@ -37,7 +37,6 @@ void Map::DrawNode(wxDC &dc, const Emergency &nodeRef)
 {
     int x = nodeRef.location.first;
     int y = nodeRef.location.second;
-
     dc.SetBrush(*wxRED_BRUSH);
     dc.SetPen(wxPen(wxColor(255, 0, 0), 2));
     dc.DrawCircle(x, y, 5);
@@ -45,16 +44,29 @@ void Map::DrawNode(wxDC &dc, const Emergency &nodeRef)
 
 void Map::SetupGraph()
 {
-    unique_ptr<Database> database = make_unique<Database>();
 
-    for (Emergency emergency : database->GetEmergencies())
-    {
-        graph.AddNode(Node(emergency.emergencyNumber, any_cast<Emergency>(emergency)));
-    };
+    unique_ptr<Database> database = make_unique<Database>();
+    vector<Ambulance> ambulances;
 
     for (Ambulance ambulance : database->GetAmbulances())
     {
-        graph.AddNode(Node(ambulance.unitNumber, any_cast<Ambulance>(ambulance)));
+        if (ambulance.status)
+        {
+            graph.AddNode(Node(ambulance.unitNumber, any_cast<Ambulance>(ambulance)));
+            ambulances.push_back(ambulance);
+        }
+    };
+
+    for (Emergency emergency : database->GetEmergencies())
+    {
+        if (!emergency.complete)
+        {
+            graph.AddNode(Node(emergency.emergencyNumber, any_cast<Emergency>(emergency)));
+            for (Ambulance ambulance : ambulances)
+            {
+                graph.AddEdge(emergency.emergencyNumber, ambulance.unitNumber, graph.CalculateDistance(emergency.location, ambulance.location));
+            }
+        }
     };
 
     graph.Display();

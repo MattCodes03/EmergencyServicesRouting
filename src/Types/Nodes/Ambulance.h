@@ -7,11 +7,11 @@ using namespace std;
 class Ambulance
 {
 public:
-    Ambulance(int unitNumber, pair<int, int> location, bool status, bool available) : unitNumber(unitNumber), location(location), status(status) {}
+    Ambulance(int unitNumber, pair<int, int> location, bool status, bool available) : unitNumber(unitNumber), location(location), status(status), available(available), activeEmergency(activeEmergency) {}
 
     int unitNumber;
     pair<int, int> location;
     bool status;
-    bool available = true;
-    int activeEmergency = 0;
+    bool available;
+    int activeEmergency;
 };
