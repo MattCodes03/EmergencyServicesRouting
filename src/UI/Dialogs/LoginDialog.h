@@ -1,6 +1,6 @@
 #pragma once
 #include <wx/wx.h>
-#include "Elements/UserInput.h"
+#include "../Elements/UserInput.h"
 
 class LoginDialog : public wxDialog
 {

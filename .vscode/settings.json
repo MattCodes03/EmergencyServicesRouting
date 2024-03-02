@@ -91,6 +91,8 @@
     "xmemory": "cpp",
     "xstddef": "cpp",
     "xtr1common": "cpp",
-    "complex": "cpp"
+    "complex": "cpp",
+    "cwctype": "cpp",
+    "source_location": "cpp"
   }
 }

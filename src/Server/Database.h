@@ -18,6 +18,7 @@ public:
     void InitializeDatabase();
 
     vector<Emergency> GetEmergencies();
+    vector<Emergency> GetUnRespondedEmergencies();
     vector<Ambulance> GetAmbulances();
 
 private:

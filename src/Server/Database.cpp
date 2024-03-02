@@ -91,6 +91,22 @@ vector<Emergency> Database::GetEmergencies()
     return emergencies;
 };
 
+vector<Emergency> Database::GetUnRespondedEmergencies()
+{
+    vector<Emergency> emergencies;
+    SQLite::Statement query(*database, "SELECT * FROM emergencies WHERE respondedTo = False");
+    while (query.executeStep())
+    {
+        pair<int, int> location = ConvertLocation((string)query.getColumn(1));
+        bool respondedTo = query.getColumn(3).getInt() != 0;
+        bool complete = query.getColumn(4).getInt() != 0;
+
+        emergencies.push_back(Emergency((int)query.getColumn(0), location, (int)query.getColumn(2), (string)query.getColumn(5), respondedTo, complete));
+    }
+
+    return emergencies;
+};
+
 vector<Ambulance> Database::GetAmbulances()
 {
     vector<Ambulance> ambulances;

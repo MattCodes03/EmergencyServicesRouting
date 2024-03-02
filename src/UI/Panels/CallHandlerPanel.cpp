@@ -23,9 +23,14 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
 
     wxStaticText *text = new wxStaticText(panel, wxID_ANY, userRef.GetName());
     text->SetFont(mainFont);
-
     // Adding the text to the sizer
     sizer->Add(text, 0, wxALIGN_CENTER | wxALL, 10);
+
+    // Accept Emergency Button
+    wxButton *acceptEmergencyButton = new wxButton(panel, 1, _("Accept Incoming Emergency"));
+    acceptEmergencyButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, userRef, parent](wxCommandEvent &event)
+                                { userRef.AcceptEmergency(event, *parent); });
+    sizer->Add(acceptEmergencyButton, 0, wxALIGN_CENTER | wxALL, 10);
 
     Map *map = new Map(panel);
     sizer->Add(map, 1, wxEXPAND);

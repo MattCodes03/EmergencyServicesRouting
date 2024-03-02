@@ -1,6 +1,6 @@
 #include "App.h"
 #include "MainFrame.h"
-#include "UI/LoginDialog.h"
+#include "UI/Dialogs/LoginDialog.h"
 #include "Server/Database.h"
 #include "Types/User/User.h"
 #include <memory>
