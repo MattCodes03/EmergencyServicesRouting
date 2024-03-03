@@ -1,4 +1,6 @@
-#pragma once
+#ifndef USERINPUT_H
+#define USERINPUT_H
+
 #include <wx/wx.h>
 #include "string"
 
@@ -24,3 +26,5 @@ private:
     wxTextCtrl *inputCtrl = nullptr;
     wxStaticText *inputLabel;
 };
+
+#endif

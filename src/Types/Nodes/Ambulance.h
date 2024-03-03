@@ -1,4 +1,6 @@
-#pragma once
+#ifndef AMBULANCE_H
+#define AMBULANCE_H
+
 #include <string>
 #include <vector>
 
@@ -15,3 +17,5 @@ public:
     bool available;
     int activeEmergency;
 };
+
+#endif

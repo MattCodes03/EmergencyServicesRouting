@@ -1,4 +1,6 @@
-#pragma once
+#ifndef NODE_H
+#define NODE_H
+
 #include <any>
 
 using namespace std;
@@ -24,3 +26,5 @@ private:
 	int id;
 	any data;
 };
+
+#endif

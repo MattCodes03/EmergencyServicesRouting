@@ -1,4 +1,6 @@
-#pragma once
+#ifndef LOGINDIALOG_H
+#define LOGINDIALOG_H
+
 #include <wx/wx.h>
 #include "../Elements/UserInput.h"
 
@@ -30,3 +32,5 @@ private:
 
     DECLARE_EVENT_TABLE()
 };
+
+#endif

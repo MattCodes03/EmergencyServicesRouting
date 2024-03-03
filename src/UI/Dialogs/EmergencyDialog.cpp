@@ -1,4 +1,5 @@
 #include "EmergencyDialog.h"
+#include "../Panels/CustomPanels.h"
 
 BEGIN_EVENT_TABLE(EmergencyDialog, wxDialog)
 END_EVENT_TABLE()
@@ -18,10 +19,21 @@ EmergencyDialog::EmergencyDialog(wxWindow *parent, wxWindowID id,
     wxStaticText *buttonLabel = new wxStaticText(this, wxID_ANY, "Severity");
     mainSizer->Add(buttonLabel, 0, wxALIGN_CENTER);
 
+    // Dynamically cast the parent so changes to the Map can be made
+    CustomPanels *parentFrame = dynamic_cast<CustomPanels *>(GetParent());
+
     // Buttons
     lowSevereButton = new wxButton(this, wxID_ANY, "Low");
+    lowSevereButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, parentFrame](wxCommandEvent &event)
+                          { userRef.PrioritiseEmergency(event, emergency, 0, parentFrame->GetMap()); });
+
     medSevereButton = new wxButton(this, wxID_ANY, "Medium");
+    medSevereButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, parentFrame](wxCommandEvent &event)
+                          { userRef.PrioritiseEmergency(event, emergency, 1, parentFrame->GetMap()); });
+
     highSevereButton = new wxButton(this, wxID_ANY, "High");
+    highSevereButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, parentFrame](wxCommandEvent &event)
+                           { userRef.PrioritiseEmergency(event, emergency, 2, parentFrame->GetMap()); });
 
     // Create a horizontal box sizer to arrange the buttons in a row
     wxBoxSizer *buttonSizer = new wxBoxSizer(wxHORIZONTAL);

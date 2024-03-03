@@ -1,5 +1,9 @@
-#pragma once
+#ifndef EMERGENCYDIALOG_H
+#define EMERGENCYDIALOG_H
+
 #include <wx/wx.h>
+#include "../../Types/User/CallHandler.h"
+#include "../../Types/Nodes/Emergency.h"
 
 class EmergencyDialog : public wxDialog
 {
@@ -21,10 +25,13 @@ public:
             this->description->SetLabel(emergencyDescription);
         }
     };
-    void SetEmergencyID(int id) { this->emergencyID = id; };
+    void SetEmergency(const Emergency &Emergency) { this->emergency = emergency; };
+
+    void SetUserRef(const CallHandler &user) { this->userRef = user; }
 
 private:
-    int emergencyID;
+    Emergency emergency;
+    CallHandler userRef;
     wxString emergencyDescription = "DEFAULT DESCRIPTION";
 
     wxStaticText *description;
@@ -35,3 +42,5 @@ private:
 
     DECLARE_EVENT_TABLE()
 };
+
+#endif

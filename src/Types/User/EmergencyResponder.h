@@ -1,6 +1,9 @@
+#ifndef EMERGENCYRESPONDER_H
+#define EMERGENCYRESPONDER_H
+
 #include "User.h"
 
-class EmergencyResponder : User
+class EmergencyResponder : public User
 {
 public:
     EmergencyResponder(const string &username, const int &unitNumber);
@@ -12,3 +15,5 @@ public:
     int unitNumber;
     // Emergency activeEmergency - Implement this once Emergency Class has been created.
 };
+
+#endif

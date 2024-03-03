@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MAP_H
+#define MAP_H
+
 #include <wx/wx.h>
 #include "../../Data Structures/Graph/Graph.h"
 #include "../../Types/Nodes/Emergency.h"
@@ -10,11 +12,13 @@
 class Map : public wxPanel
 {
 public:
-    Map(wxWindow *parent) : wxPanel(parent), graph(50, 42){};
+    Map(wxWindow *parent) : wxPanel(parent), graph(50, 47){};
 
     void OnPaint(wxPaintEvent &event);
 
     void SetupGraph();
+
+    Graph GetGraph() const { return this->graph; };
 
 private:
     Graph graph;
@@ -26,3 +30,5 @@ private:
 
     DECLARE_EVENT_TABLE();
 };
+
+#endif

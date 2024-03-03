@@ -1,6 +1,8 @@
 #include "CallHandler.h"
 #include "../../UI/Dialogs/EmergencyDialog.h"
-#include "../../Server/Utils.h"
+#include "../../Data Structures/Utils.h"
+
+template class Queue<Emergency>;
 
 CallHandler::CallHandler(const string &username, const string &firstname, const string &lastname) : User(username)
 {
@@ -12,6 +14,7 @@ CallHandler::CallHandler(const string &username, const string &firstname, const 
 void CallHandler::AcceptEmergency(wxCommandEvent &event, wxWindow &parent) const
 {
     EmergencyDialog emergency(&parent, wxID_ANY, _("Emergency"));
+    emergency.SetUserRef(*this);
 
     // Get an emergency
     unique_ptr<Database> database = make_unique<Database>();
@@ -19,15 +22,17 @@ void CallHandler::AcceptEmergency(wxCommandEvent &event, wxWindow &parent) const
     // Update all emergency details
     Emergency activeEmergency = GetRandom(emergencies);
 
-    emergency.SetEmergencyID(activeEmergency.emergencyNumber);
+    emergency.SetEmergency(activeEmergency);
     emergency.SetDescription(activeEmergency.description);
     // Show emergency
     emergency.ShowModal();
     // Deal with prioritisation
 }
 
-void CallHandler::PrioritiseEmergency()
+void CallHandler::PrioritiseEmergency(wxCommandEvent &event, Emergency emergency, int emergencyPriority, const Map &map) const
 {
+    emergency.priority = emergencyPriority;
+    map.GetGraph().queue.EnQueue(emergency);
 }
 
 void CallHandler::SendMessage()

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MAINFRAME_H
+#define MAINFRAME_H
+
 #include <wx/wx.h>
 #include "Types/User/User.h"
 #include <string>
@@ -25,3 +27,5 @@ public:
 private:
 	string view;
 };
+
+#endif

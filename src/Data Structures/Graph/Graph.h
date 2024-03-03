@@ -1,14 +1,17 @@
-#pragma once
+#ifndef GRAPH_H
+#define GRAPH_H
+
 #include <vector>
-#include <any>
 #include "Node.h"
+#include "../Priority Queue/Queue.h"
+#include "../../Types/Nodes/Emergency.h"
 
 using namespace std;
 
 class Graph
 {
 public:
-    Graph(int numNodes, const any &defaultData) : adjacencyList(numNodes), nodes(numNodes)
+    Graph(int numNodes, const any &defaultData) : adjacencyList(numNodes), nodes(numNodes), queue()
     {
         for (int i = 0; i < numNodes; ++i)
         {
@@ -35,7 +38,11 @@ public:
     vector<Node> GetNodes() const { return this->nodes; };
     vector<vector<pair<int, int>>> GetAdjacencyList() const { return this->adjacencyList; };
 
+    Queue<Emergency> queue;
+
 private:
     vector<vector<pair<int, int>>> adjacencyList;
     vector<Node> nodes;
 };
+
+#endif

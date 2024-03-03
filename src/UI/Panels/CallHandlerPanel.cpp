@@ -32,7 +32,7 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
                                 { userRef.AcceptEmergency(event, *parent); });
     sizer->Add(acceptEmergencyButton, 0, wxALIGN_CENTER | wxALL, 10);
 
-    Map *map = new Map(panel);
+    map = new Map(panel);
     sizer->Add(map, 1, wxEXPAND);
 
     // Setting the sizer for the panel

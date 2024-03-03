@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CUSTOMPANELS_H
+#define CUSTOMPANELS_H
+
 #include <wx/wx.h>
 #include <any>
 #include <string>
@@ -30,12 +32,17 @@ public:
 
         if (type == "HOPSITAL")
         {
-            user = std::make_any<HospitalAdmin>(activeUser.getUsername());
+            user = make_any<HospitalAdmin>(activeUser.getUsername());
         }
     }
 
     any user;
 
+    const Map &GetMap() const { return this->map; };
+
 private:
     wxPanel *panel;
+    Map *map;
 };
+
+#endif
