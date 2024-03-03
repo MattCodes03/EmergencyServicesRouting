@@ -1,5 +1,5 @@
 #include "EmergencyDialog.h"
-#include "../Panels/CustomPanels.h"
+#include "../../MainFrame.h"
 
 BEGIN_EVENT_TABLE(EmergencyDialog, wxDialog)
 END_EVENT_TABLE()
@@ -20,20 +20,21 @@ EmergencyDialog::EmergencyDialog(wxWindow *parent, wxWindowID id,
     mainSizer->Add(buttonLabel, 0, wxALIGN_CENTER);
 
     // Dynamically cast the parent so changes to the Map can be made
-    CustomPanels *parentFrame = dynamic_cast<CustomPanels *>(GetParent());
+    MainFrame *parentFrame = dynamic_cast<MainFrame *>(parent);
 
     // Buttons
+    if(parentFrame != nullptr){
     lowSevereButton = new wxButton(this, wxID_ANY, "Low");
     lowSevereButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, parentFrame](wxCommandEvent &event)
-                          { userRef.PrioritiseEmergency(event, emergency, 0, parentFrame->GetMap()); });
+                          { userRef.PrioritiseEmergency(event, emergency, 0, parentFrame->customPanels.GetMap()); });
 
     medSevereButton = new wxButton(this, wxID_ANY, "Medium");
     medSevereButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, parentFrame](wxCommandEvent &event)
-                          { userRef.PrioritiseEmergency(event, emergency, 1, parentFrame->GetMap()); });
+                          { userRef.PrioritiseEmergency(event, emergency, 1, parentFrame->customPanels.GetMap()); });
 
     highSevereButton = new wxButton(this, wxID_ANY, "High");
     highSevereButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, parentFrame](wxCommandEvent &event)
-                           { userRef.PrioritiseEmergency(event, emergency, 2, parentFrame->GetMap()); });
+                           { userRef.PrioritiseEmergency(event, emergency, 2, parentFrame->customPanels.GetMap()); });
 
     // Create a horizontal box sizer to arrange the buttons in a row
     wxBoxSizer *buttonSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -41,7 +42,7 @@ EmergencyDialog::EmergencyDialog(wxWindow *parent, wxWindowID id,
     buttonSizer->Add(medSevereButton, 0, wxALL, 5);
     buttonSizer->Add(highSevereButton, 0, wxALL, 5);
     mainSizer->Add(buttonSizer, 0, wxALIGN_CENTER | wxBOTTOM, 5);
-
+    }
     SetSizer(mainSizer);
     SetMinSize(wxSize(400, 100));
     Fit();

@@ -5,6 +5,7 @@
 #include "Types/User/User.h"
 #include <string>
 #include <memory>
+#include "UI/Panels/CustomPanels.h"
 
 using namespace std;
 
@@ -23,6 +24,8 @@ public:
 	}
 
 	unique_ptr<User> activeUser;
+
+	CustomPanels customPanels;
 
 private:
 	string view;

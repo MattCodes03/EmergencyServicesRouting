@@ -38,7 +38,7 @@ public:
 
     any user;
 
-    const Map &GetMap() const { return this->map; };
+    const Map &GetMap() const { return *map; };
 
 private:
     wxPanel *panel;
