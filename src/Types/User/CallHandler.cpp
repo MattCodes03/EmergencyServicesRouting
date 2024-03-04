@@ -32,7 +32,19 @@ void CallHandler::AcceptEmergency(wxCommandEvent &event, wxWindow &parent) const
 void CallHandler::PrioritiseEmergency(wxCommandEvent &event, Emergency emergency, int emergencyPriority, const Map &map) const
 {
     emergency.priority = emergencyPriority;
+
+    map.GetGraph().queue.Display();
+
+    Emergency emergency1(1, {10, 10}, 1, "test", false, false);
+    map.GetGraph().queue.EnQueue(emergency1);
+
     map.GetGraph().queue.EnQueue(emergency);
+    cout << "emergency1 < emergency2: " << (emergency < emergency1) << endl;
+    cout << "Size of Queue - " << map.GetGraph().queue.GetQueue().size() << endl;
+    ;
+
+    // Display Priority Queue for Debug Purposes
+    map.GetGraph().queue.Display();
 }
 
 void CallHandler::SendMessage()

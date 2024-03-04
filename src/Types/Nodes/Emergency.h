@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
@@ -21,6 +22,13 @@ public:
     bool operator<(const Emergency &other) const
     {
         return this->priority < other.priority;
+    }
+
+    // Overload << operator to define string representation
+    friend std::ostream &operator<<(std::ostream &os, const Emergency &obj)
+    {
+        os << obj.emergencyNumber << " - " << obj.priority;
+        return os;
     }
 
     int emergencyNumber;

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "../Utils.h"
+#include <iostream>
 
 using namespace std;
 
@@ -16,20 +17,44 @@ public:
     {
         // Push onto queue
         queue.push_back(item);
+    };
 
-        // Sort the queue by priority using the QuickSort Algorithm
-        if (queue.size() > 1)
+    void DeQueue(const T &item)
+    {
+        // Check if the queue is not empty before dequeuing
+        if (!queue.empty())
         {
-            QuickSort(queue);
+            cout << "DeQueued: " << queue.front() << "\n";
+            queue.erase(queue.begin()); // Remove the front element
+        }
+        else
+        {
+            cout << "Queue is empty! Cannot DeQueue.\n";
         }
     };
 
-    void DeQueue(const T &item){
+    void Display()
+    {
+        if (!queue.empty())
+        {
+            for (const T &item : queue)
+            {
+                cout << item << "\n";
+            }
+        }
+        else
+        {
+            cout << "No items in Queue!\n";
+        }
+    }
 
-    };
+    vector<T> &GetQueue()
+    {
+        return queue;
+    }
 
 private:
-    vector<T> queue;
+    vector<T> queue{};
 };
 
 #endif
