@@ -1,6 +1,8 @@
 #include "CallHandler.h"
 #include "../../UI/Dialogs/EmergencyDialog.h"
 #include "../../Data Structures/Utils.h"
+#include "../../Data Structures/Priority Queue/Queue.h"
+#include "../../MainFrame.h"
 
 template class Queue<Emergency>;
 
@@ -17,34 +19,34 @@ void CallHandler::AcceptEmergency(wxCommandEvent &event, wxWindow &parent) const
     emergency.SetUserRef(*this);
 
     // Get an emergency
-    unique_ptr<Database> database = make_unique<Database>();
-    vector<Emergency> emergencies = database->GetUnRespondedEmergencies();
-    // Update all emergency details
-    Emergency activeEmergency = GetRandom(emergencies);
+    MainFrame *parentFrame = dynamic_cast<MainFrame *>(&parent);
+    vector<Emergency> emergencies = parentFrame->customPanels.GetDatabase().GetUnRespondedEmergencies();
+    if (!emergencies.empty())
+    {
+        // Update all emergency details
+        Emergency activeEmergency = GetRandom(emergencies);
 
-    emergency.SetEmergency(activeEmergency);
-    emergency.SetDescription(activeEmergency.description);
-    // Show emergency
-    emergency.ShowModal();
-    // Deal with prioritisation
+        emergency.SetEmergency(activeEmergency);
+        emergency.SetDescription(activeEmergency.description);
+        // Show emergency
+        emergency.ShowModal();
+    }
+    else
+    {
+        wxMessageBox("There are no incoming emergencies.", "Information", wxOK | wxICON_INFORMATION, &parent);
+    }
 }
 
-void CallHandler::PrioritiseEmergency(wxCommandEvent &event, Emergency emergency, int emergencyPriority, const Map &map) const
+void CallHandler::PrioritiseEmergency(wxCommandEvent &event, wxWindow &parent, Emergency emergency, int emergencyPriority)
 {
+    MainFrame *parentFrame = dynamic_cast<MainFrame *>(&parent);
+
     emergency.priority = emergencyPriority;
+    parentFrame->customPanels.GetMap().GetGraph().queue.EnQueue(emergency);
+    parentFrame->customPanels.GetMap().GetGraph().queue.Display();
 
-    map.GetGraph().queue.Display();
-
-    Emergency emergency1(1, {10, 10}, 1, "test", false, false);
-    map.GetGraph().queue.EnQueue(emergency1);
-
-    map.GetGraph().queue.EnQueue(emergency);
-    cout << "emergency1 < emergency2: " << (emergency < emergency1) << endl;
-    cout << "Size of Queue - " << map.GetGraph().queue.GetQueue().size() << endl;
-    ;
-
-    // Display Priority Queue for Debug Purposes
-    map.GetGraph().queue.Display();
+    // Update Database and set Emergency as RespondedTo
+    parentFrame->customPanels.GetDatabase().UpdateRecord("emergencies", {"respondedTo"}, {"1"}, "emergencyID='" + to_string(emergency.emergencyNumber) + "'");
 }
 
 void CallHandler::SendMessage()

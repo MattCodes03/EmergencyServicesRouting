@@ -59,7 +59,7 @@ void Map::SetupGraph()
 
     for (Emergency emergency : database->GetEmergencies())
     {
-        if (!emergency.complete)
+        if (!emergency.complete && emergency.respondedTo)
         {
             graph.AddNode(Node(emergency.emergencyNumber, any_cast<Emergency>(emergency)));
             for (Ambulance ambulance : ambulances)
@@ -68,8 +68,6 @@ void Map::SetupGraph()
             }
         }
     };
-
-    graph.Display();
 }
 
 void Map::DrawGraph(wxDC &dc)
@@ -86,4 +84,9 @@ void Map::DrawGraph(wxDC &dc)
             DrawNode(dc, any_cast<Ambulance>(node.GetData()));
         }
     };
+};
+
+void Map::OnDatabaseChange()
+{
+    Refresh();
 };

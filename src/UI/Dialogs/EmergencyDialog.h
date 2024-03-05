@@ -25,12 +25,13 @@ public:
             this->description->SetLabel(emergencyDescription);
         }
     };
-    void SetEmergency(const Emergency &Emergency) { this->emergency = emergency; };
+    void SetEmergency(const Emergency &emergency) { this->emergency = emergency; };
 
     void SetUserRef(const CallHandler &user) { this->userRef = user; }
 
-private:
     Emergency emergency;
+
+private:
     CallHandler userRef;
     wxString emergencyDescription = "DEFAULT DESCRIPTION";
 

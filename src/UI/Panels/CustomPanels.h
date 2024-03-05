@@ -38,11 +38,14 @@ public:
 
     any user;
 
-    const Map &GetMap() const { return *map; };
+    Map &GetMap() { return *map; };
+
+    Database &GetDatabase() { return *database; };
 
 private:
     wxPanel *panel;
     Map *map;
+    Database *database = new Database();
 };
 
 #endif

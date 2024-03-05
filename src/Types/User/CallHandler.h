@@ -12,7 +12,7 @@ public:
     CallHandler(const string &username, const string &firstname, const string &lastname);
 
     void AcceptEmergency(wxCommandEvent &event, wxWindow &parent) const;
-    void PrioritiseEmergency(wxCommandEvent &event, Emergency emergency, int emergencyPriority, const Map &map) const;
+    void PrioritiseEmergency(wxCommandEvent &event, wxWindow &parent, Emergency emergency, int emergencyPriority);
     void SendMessage();
 
     string GetName() { return firstname + " " + lastname; };

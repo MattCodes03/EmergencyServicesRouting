@@ -31,6 +31,77 @@ void Database::InitializeDatabase()
     GeneratePsuedoData();
 };
 
+void Database::AddListener(DatabaseListener *listener)
+{
+    listeners.push_back(listener);
+}
+
+// void Database::RemoveListener(DatabaseListener *listener)
+// {
+//     listeners.erase(remove(listeners.begin(), listeners.end(), listener), listeners.end());
+// }
+
+void Database::NotifyListeners()
+{
+    for (auto listener : listeners)
+    {
+        listener->OnDatabaseChange();
+    }
+}
+
+void Database::UpdateRecord(const string &tableName, const vector<string> &columns, const vector<string> &values, const string &conditions)
+{
+    if (columns.size() != values.size())
+    {
+        throw invalid_argument("Must have same number of values as columns!");
+    }
+
+    SQLite::Transaction transaction(*database);
+
+    stringstream query;
+    query << "UPDATE " << tableName << " SET ";
+
+    for (size_t i = 0; i < columns.size(); i++)
+    {
+        query << columns[i] << " = '" << values[i] << "'";
+        if (i < columns.size() - 1)
+        {
+            query << ", ";
+        }
+    }
+
+    if (!conditions.empty())
+    {
+        query << " WHERE " << conditions;
+    }
+
+    SQLite::Statement updateStatement(*database, query.str());
+    updateStatement.exec();
+
+    transaction.commit();
+
+    NotifyListeners();
+};
+
+void Database::InsertRecord(const string &tableName, const vector<string> &values)
+{
+    stringstream query;
+    query << "INSERT INTO" << tableName << "VALUES (";
+    for (size_t i = 0; i < values.size(); i++)
+    {
+        query << values[i];
+        if (i < values.size() - 1)
+        {
+            query << ", ";
+        }
+    }
+
+    query << ")";
+
+    SQLite::Statement insertStatement(*database, query.str());
+    insertStatement.exec();
+};
+
 // This function is used solely for testing purposes as in release data will be real and accurate.
 void Database::GeneratePsuedoData()
 {
@@ -42,7 +113,7 @@ void Database::GeneratePsuedoData()
 
     // Fake Emergencies - Update this with better data once app development is further along.
     database->exec("INSERT INTO emergencies VALUES (1, \"(40, 150)\", 1, 0, 0, \"Test1\")");
-    database->exec("INSERT INTO emergencies VALUES (2, \"(500, 550)\", 1, 0, 1, \"Test2\")");
+    database->exec("INSERT INTO emergencies VALUES (2, \"(500, 550)\", 1, 1, 1, \"Test2\")");
     database->exec("INSERT INTO emergencies VALUES (3, \"(50, 60)\", 1, 0, 0, \"Test3\")");
 
     // Fake Ambulances
@@ -85,7 +156,7 @@ vector<Emergency> Database::GetEmergencies()
         bool respondedTo = query.getColumn(3).getInt() != 0;
         bool complete = query.getColumn(4).getInt() != 0;
 
-        emergencies.push_back(Emergency((int)query.getColumn(0), location, (int)query.getColumn(2), (string)query.getColumn(5), respondedTo, complete));
+        emergencies.push_back(Emergency((int)query.getColumn(0).getInt(), location, (int)query.getColumn(2), (string)query.getColumn(5), respondedTo, complete));
     }
 
     return emergencies;
@@ -101,7 +172,7 @@ vector<Emergency> Database::GetUnRespondedEmergencies()
         bool respondedTo = query.getColumn(3).getInt() != 0;
         bool complete = query.getColumn(4).getInt() != 0;
 
-        emergencies.push_back(Emergency((int)query.getColumn(0), location, (int)query.getColumn(2), (string)query.getColumn(5), respondedTo, complete));
+        emergencies.push_back(Emergency((int)query.getColumn(0).getInt(), location, (int)query.getColumn(2), (string)query.getColumn(5), respondedTo, complete));
     }
 
     return emergencies;

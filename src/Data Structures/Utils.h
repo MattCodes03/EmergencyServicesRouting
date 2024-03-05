@@ -57,7 +57,10 @@ void QuickSortRecursive(vector<T> &items, size_t low, size_t high)
     {
         size_t pivotIndex = Pivot(items, low, high);
 
-        QuickSortRecursive(items, low, pivotIndex);
+        if (pivotIndex > 0)
+        {
+            QuickSortRecursive(items, low, pivotIndex - 1);
+        }
         QuickSortRecursive(items, pivotIndex + 1, high);
     }
 }

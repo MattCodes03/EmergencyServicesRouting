@@ -15,8 +15,17 @@ public:
 
     void EnQueue(const T &item)
     {
-        // Push onto queue
-        queue.push_back(item);
+        try
+        {
+            // Push onto queue
+            queue.push_back(item);
+
+            QuickSort(queue);
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << "Exception in EnQueue: " << e.what() << std::endl;
+        }
     };
 
     void DeQueue(const T &item)

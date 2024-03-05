@@ -33,6 +33,7 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
     sizer->Add(acceptEmergencyButton, 0, wxALIGN_CENTER | wxALL, 10);
 
     map = new Map(panel);
+    database->AddListener(map);
     sizer->Add(map, 1, wxEXPAND);
 
     // Setting the sizer for the panel

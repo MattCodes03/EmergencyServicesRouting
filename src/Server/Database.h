@@ -11,6 +11,12 @@
 
 using namespace std;
 
+class DatabaseListener
+{
+public:
+    virtual void OnDatabaseChange() = 0;
+};
+
 class Database
 {
 public:
@@ -18,6 +24,13 @@ public:
     SQLite::Database *database;
 
     void InitializeDatabase();
+
+    void AddListener(DatabaseListener *listener);
+    void RemoveListener(DatabaseListener *listener);
+    void NotifyListeners();
+
+    void UpdateRecord(const string &tableName, const vector<string> &columns, const vector<string> &values, const string &conditions);
+    void InsertRecord(const string &tableName, const vector<string> &values);
 
     vector<Emergency> GetEmergencies();
     vector<Emergency> GetUnRespondedEmergencies();
@@ -27,6 +40,7 @@ private:
     void GeneratePsuedoData();
 
     pair<int, int> ConvertLocation(const string &location);
+    vector<DatabaseListener *> listeners;
 };
 
 #endif
