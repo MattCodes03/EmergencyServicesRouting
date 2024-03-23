@@ -11,8 +11,13 @@ file(GLOB_RECURSE SOURCES
 set(wxBUILD_SHARED OFF)
 set(wxBUILD_USE_STATIC_RUNTIME ON)
 
-set(VCPKG_TARGET_TRIPLET "x64-windows" CACHE STRING "")
-set(CMAKE_TOOLCHAIN_FILE "E:/Libraries/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+if (DEFINED ENV{VCPKG_ROOT})
+  set(VCPKG_CMAKE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+else ()
+  set(VCPKG_CMAKE "H:/vcpkg/scripts/buildsystems/vcpkg.cmake")
+endif ()
+
+set(CMAKE_TOOLCHAIN_FILE ${VCPKG_CMAKE}) # n.b.
 
 add_subdirectory(wxWidgets)
 add_subdirectory(SQLiteCpp)
