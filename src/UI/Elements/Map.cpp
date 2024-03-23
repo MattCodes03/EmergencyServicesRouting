@@ -44,7 +44,6 @@ void Map::DrawNode(wxDC &dc, const Emergency &nodeRef)
 
 void Map::SetupGraph()
 {
-
     unique_ptr<Database> database = make_unique<Database>();
     vector<Ambulance> ambulances;
 
@@ -64,10 +63,15 @@ void Map::SetupGraph()
             graph.AddNode(Node(emergency.emergencyNumber, any_cast<Emergency>(emergency)));
             for (Ambulance ambulance : ambulances)
             {
-                graph.AddEdge(emergency.emergencyNumber, ambulance.unitNumber, graph.CalculateDistance(emergency.location, ambulance.location));
+                if (ambulance.available)
+                {
+                    graph.AddEdge(emergency.emergencyNumber, ambulance.unitNumber, graph.CalculateDistance(emergency.location, ambulance.location));
+                }
             }
         }
     };
+
+    graph.Display();
 }
 
 void Map::DrawGraph(wxDC &dc)

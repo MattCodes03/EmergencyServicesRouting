@@ -28,12 +28,11 @@ public:
         }
     };
 
-    void DeQueue(const T &item)
+    void DeQueue()
     {
         // Check if the queue is not empty before dequeuing
         if (!queue.empty())
         {
-            cout << "DeQueued: " << queue.front() << "\n";
             queue.erase(queue.begin()); // Remove the front element
         }
         else

@@ -118,7 +118,7 @@ void Database::GeneratePsuedoData()
 
     // Fake Ambulances
     database->exec("INSERT INTO ambulance VALUES (8, \"(50, 50)\", 1, 1, 0)");
-    database->exec("INSERT INTO ambulance VALUES (9, \"(60, 80)\", 1, 0, 0)");
+    database->exec("INSERT INTO ambulance VALUES (9, \"(60, 80)\", 1, 1, 0)");
 
     // Commit Transaction
     psuedoDataTransaction.commit();

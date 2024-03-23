@@ -43,12 +43,16 @@ void CallHandler::PrioritiseEmergency(wxCommandEvent &event, wxWindow &parent, E
 
     emergency.priority = emergencyPriority;
     parentFrame->customPanels.GetMap().GetGraph().queue.EnQueue(emergency);
-    parentFrame->customPanels.GetMap().GetGraph().queue.Display();
 
     // Update Database and set Emergency as RespondedTo
     parentFrame->customPanels.GetDatabase().UpdateRecord("emergencies", {"respondedTo"}, {"1"}, "emergencyID='" + to_string(emergency.emergencyNumber) + "'");
+
+    pair<int, int> dest = parentFrame->customPanels.GetMap().GetGraph().Dijkstra(parentFrame->customPanels.GetMap().GetGraph().queue.GetQueue()[0].emergencyNumber);
+    parentFrame->customPanels.GetMap().GetGraph().queue.DeQueue();
+
+    cout << "Source Node: " << dest.first << " - Destination Node: " << dest.second << endl;
 }
 
-void CallHandler::SendMessage()
+void CallHandler::RouteEmergency()
 {
 }

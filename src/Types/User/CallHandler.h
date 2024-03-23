@@ -13,7 +13,7 @@ public:
 
     void AcceptEmergency(wxCommandEvent &event, wxWindow &parent) const;
     void PrioritiseEmergency(wxCommandEvent &event, wxWindow &parent, Emergency emergency, int emergencyPriority);
-    void SendMessage();
+    void RouteEmergency();
 
     string GetName() { return firstname + " " + lastname; };
 
