@@ -30,12 +30,23 @@ public:
 
     void AddEdge(int source, int destination, int weight)
     {
+        // Check if the edge already exists
+        for (const auto &neighbor : adjacencyList[source])
+        {
+            if (neighbor.first == destination)
+            {
+                // Edge already exists, return without adding it again
+                return;
+            }
+        }
+        // Edge does not exist, add it to the graph
         adjacencyList[source].emplace_back(destination, weight);
-        adjacencyList[destination].emplace_back(source, weight);
+        sort(adjacencyList[source].begin(), adjacencyList[source].end());
     }
+
     void AddNode(const Node &node)
     {
-        nodes.emplace_back(node);
+        nodes[node.GetID()] = node;
     };
 
     void ClearGraph()
@@ -71,20 +82,29 @@ public:
         vector<int> parent(n, -1);
         vector<bool> visited(n, false);
 
-        vector<pair<int, int>> pq;
-
         distance[source] = 0;
-        pq.push_back({0, source});
 
-        while (!pq.empty())
+        while (true)
         {
             int u = -1;
             int minDistance = numeric_limits<int>::max();
 
-            if (visited[u])
-                continue;
-            visited[u] = true;
+            // Find the node with the minimum distance among unvisited nodes
+            for (int j = 0; j < n; ++j)
+            {
+                if (!visited[j] && distance[j] < minDistance)
+                {
+                    minDistance = distance[j];
+                    u = j;
+                }
+            }
 
+            if (u == -1) // If no unvisited nodes found
+                break;
+
+            visited[u] = true; // Mark the current node as visited
+
+            // Update distances to neighbors of u
             for (const auto &neighbor : adjacencyList[u])
             {
                 int v = neighbor.first;
@@ -93,22 +113,32 @@ public:
                 {
                     distance[v] = distance[u] + weight;
                     parent[v] = u;
-                    pq.push_back({distance[v], v});
                 }
             }
         }
 
-        // Find the closest ambulance or hospital from the source
+        // Find the destination node
+        bool destinationFound = false;
         int destination = -1;
-        int minDistance = numeric_limits<int>::max();
+        int minDistance = numeric_limits<int>::max(); // Initialize to maximum value
         for (int i = 0; i < n; ++i)
         {
-            if (i != source && distance[i] < minDistance)
+            if (i != source && distance[i] < minDistance && distance[i] != numeric_limits<int>::max())
             {
-                minDistance = distance[i];
                 destination = i;
+                minDistance = distance[i]; // Update minDistance
+                destinationFound = true;
             }
         }
+
+        // If no destination found, set it to -1
+        if (!destinationFound)
+        {
+            destination = -1;
+        }
+
+        // Debug print to check destination
+        cout << "Destination: " << destination << endl;
 
         return {source, destination};
     }

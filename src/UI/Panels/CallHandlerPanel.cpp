@@ -32,6 +32,12 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
                                 { userRef.AcceptEmergency(event, *parent); });
     sizer->Add(acceptEmergencyButton, 0, wxALIGN_CENTER | wxALL, 10);
 
+    // Route Emergency Button
+    wxButton *routeEmergencyButton = new wxButton(panel, 1, _("Route Active Emergency"));
+    routeEmergencyButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, userRef, parent](wxCommandEvent &event)
+                               { userRef.RouteEmergency(event, *parent); });
+    sizer->Add(routeEmergencyButton, 0, wxALIGN_CENTER | wxALL, 10);
+
     map = new Map(panel);
     database->AddListener(map);
     sizer->Add(map, 1, wxEXPAND);

@@ -12,7 +12,7 @@ public:
 
 	Node(int id, const any &data) : id(id), data(data){};
 
-	int GetID()
+	int GetID() const
 	{
 		return this->id;
 	}

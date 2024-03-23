@@ -15,6 +15,12 @@ public:
     Map() : graph(50, 47){};
     Map(wxWindow *parent) : wxPanel(parent), graph(50, 47){};
 
+    ~Map()
+    {
+        // Deallocate the memory for dc
+        delete dc;
+    }
+
     void OnDatabaseChange() override;
 
     void OnPaint(wxPaintEvent &event);
@@ -22,6 +28,11 @@ public:
     void SetupGraph();
 
     Graph &GetGraph() { return this->graph; };
+
+    void DrawEdge(pair<int, int> source, pair<int, int> destination)
+    {
+        this->DrawEdge(*dc, source, destination);
+    };
 
     // Copy assignment operator
     Map &operator=(const Map &other)
@@ -35,8 +46,11 @@ public:
 
 private:
     Graph graph;
+    wxPaintDC *dc;
+
     void DrawGraph(wxDC &dc);
 
+    void DrawEdge(wxDC &dc, pair<int, int> source, pair<int, int> destination);
     void DrawNode(wxDC &dc, const Ambulance &nodeRef);
     void DrawNode(wxDC &dc, const Emergency &nodeRef);
 

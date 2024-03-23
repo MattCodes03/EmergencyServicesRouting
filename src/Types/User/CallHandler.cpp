@@ -46,13 +46,31 @@ void CallHandler::PrioritiseEmergency(wxCommandEvent &event, wxWindow &parent, E
 
     // Update Database and set Emergency as RespondedTo
     parentFrame->customPanels.GetDatabase().UpdateRecord("emergencies", {"respondedTo"}, {"1"}, "emergencyID='" + to_string(emergency.emergencyNumber) + "'");
-
-    pair<int, int> dest = parentFrame->customPanels.GetMap().GetGraph().Dijkstra(parentFrame->customPanels.GetMap().GetGraph().queue.GetQueue()[0].emergencyNumber);
-    parentFrame->customPanels.GetMap().GetGraph().queue.DeQueue();
-
-    cout << "Source Node: " << dest.first << " - Destination Node: " << dest.second << endl;
 }
 
-void CallHandler::RouteEmergency()
+void CallHandler::RouteEmergency(wxCommandEvent &event, wxWindow &parent) const
 {
+    MainFrame *parentFrame = dynamic_cast<MainFrame *>(&parent);
+
+    pair<int, int> edge = parentFrame->customPanels.GetMap().GetGraph().Dijkstra(parentFrame->customPanels.GetMap().GetGraph().queue.GetQueue()[0].emergencyNumber);
+    parentFrame->customPanels.GetMap().GetGraph().queue.DeQueue();
+
+    const std::type_info &typeInfo = parentFrame->customPanels.GetMap().GetGraph().GetNodes()[3].GetData().type();
+
+    try
+    {
+        // Get nodes;
+        Emergency source = any_cast<Emergency>(parentFrame->customPanels.GetMap().GetGraph().GetNodes()[edge.first].GetData());
+
+        Ambulance destination = any_cast<Ambulance>(parentFrame->customPanels.GetMap().GetGraph().GetNodes()[edge.second].GetData());
+
+        // Update the database and assign this emergency to the ambulance and set ambulance availability to false so it doesn't get assigned multiple calls at once
+
+        // Draw the edge on the map between emergency and assigned ambulance
+        parentFrame->customPanels.GetMap().DrawEdge(source.location, destination.location);
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 }

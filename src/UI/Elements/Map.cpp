@@ -1,8 +1,10 @@
 #include "Map.h"
+#include <set>
 
 void Map::OnPaint(wxPaintEvent &event)
 {
-    wxPaintDC dc(this);
+    wxPaintDC paintDC(this);
+    dc = &paintDC;
 
     // Load the PNG image
     wxBitmap pngBitmap("Assets/map.png", wxBITMAP_TYPE_PNG);
@@ -14,10 +16,10 @@ void Map::OnPaint(wxPaintEvent &event)
     }
 
     // Draw the PNG image on the DC
-    dc.DrawBitmap(pngBitmap, 0, 0, true);
+    dc->DrawBitmap(pngBitmap, 0, 0, true);
 
     SetupGraph();
-    DrawGraph(dc);
+    DrawGraph(*dc);
 };
 
 void Map::DrawNode(wxDC &dc, const Ambulance &nodeRef)
@@ -56,6 +58,8 @@ void Map::SetupGraph()
         }
     };
 
+    set<pair<int, int>> visitedEdges; // Maintain a set to store visited edges
+
     for (Emergency emergency : database->GetEmergencies())
     {
         if (!emergency.complete && emergency.respondedTo)
@@ -63,15 +67,27 @@ void Map::SetupGraph()
             graph.AddNode(Node(emergency.emergencyNumber, any_cast<Emergency>(emergency)));
             for (Ambulance ambulance : ambulances)
             {
-                if (ambulance.available)
+                if (ambulance.available && visitedEdges.find({emergency.emergencyNumber, ambulance.unitNumber}) == visitedEdges.end())
                 {
+                    // Edge does not exist, add it to the graph
                     graph.AddEdge(emergency.emergencyNumber, ambulance.unitNumber, graph.CalculateDistance(emergency.location, ambulance.location));
+                    // Add the edge to the visited set
+                    visitedEdges.insert({emergency.emergencyNumber, ambulance.unitNumber});
                 }
             }
         }
-    };
+    }
 
     graph.Display();
+}
+
+void Map::DrawEdge(wxDC &dc, pair<int, int> source, pair<int, int> destination)
+{
+    // Set pen color and width for the edge
+    dc.SetPen(wxPen(wxColor(0, 0, 0), 5));
+
+    // Draw line between source and destination points
+    dc.DrawLine(source.first, source.second, destination.first, destination.second);
 }
 
 void Map::DrawGraph(wxDC &dc)
