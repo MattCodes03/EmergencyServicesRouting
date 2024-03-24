@@ -45,6 +45,11 @@ public:
 
     void Logout(wxCommandEvent &event)
     {
+        if (timer)
+        {
+            timer->Stop();
+            delete timer;
+        }
         user.reset();
         App::GetInstance().Restart();
     }
@@ -59,6 +64,7 @@ private:
     wxPanel *panel;
     Map *map;
     Database *database = new Database();
+    wxTimer *timer = nullptr;
 };
 
 #endif

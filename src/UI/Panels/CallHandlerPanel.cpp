@@ -43,13 +43,18 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
 
         userRef.AcceptEmergency(event, *parent);
 
+        if (timer)
+        {
+            timer->Stop();
+            delete timer;
+            timer = nullptr;
+        }
+
         // Use a timer to temporarily disable the button, this is done to prevent users overloading the system by spamming emergencies
-        wxTimer *timer = new wxTimer();
-        timer->Bind(wxEVT_TIMER, [acceptEmergencyButton, timer](wxTimerEvent &event)
+        timer = new wxTimer();
+        timer->Bind(wxEVT_TIMER, [acceptEmergencyButton](wxTimerEvent &event)
                     {acceptEmergencyButton->Enable(); 
-                   std::cout << "Button enabled\n"; 
-                   timer->Stop();  // Stop the timer after executing once
-        delete timer; });
+                   std::cout << "Button enabled\n"; });
         timer->StartOnce(5000); // 5 seconds
         std::cout << "Timer Started\n";
 
