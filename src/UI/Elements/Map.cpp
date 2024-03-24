@@ -3,7 +3,7 @@
 
 void Map::OnPaint(wxPaintEvent &event)
 {
-    wxPaintDC paintDC(this);
+    wxPaintDC paintDC(this); // Create a wxPaintDC object for this panel
     dc = &paintDC;
 
     // Load the PNG image
@@ -19,29 +19,32 @@ void Map::OnPaint(wxPaintEvent &event)
     dc->DrawBitmap(pngBitmap, 0, 0, true);
 
     SetupGraph();
-    DrawGraph(*dc);
+    DrawGraph();
 };
 
-void Map::DrawNode(wxDC &dc, const Ambulance &nodeRef)
+void Map::DrawNode(const Ambulance &nodeRef)
 {
     int x = nodeRef.location.first;
     int y = nodeRef.location.second;
 
-    if (nodeRef.available)
+    if (nodeRef.available && dc)
     {
-        dc.SetBrush(*wxBLUE_BRUSH);
-        dc.SetPen(wxPen(wxColor(0, 0, 255), 2));
-        dc.DrawCircle(x, y, 5);
+        dc->SetBrush(*wxBLUE_BRUSH);
+        dc->SetPen(wxPen(wxColor(0, 0, 255), 2));
+        dc->DrawCircle(x, y, 5);
     }
 }
 
-void Map::DrawNode(wxDC &dc, const Emergency &nodeRef)
+void Map::DrawNode(const Emergency &nodeRef)
 {
-    int x = nodeRef.location.first;
-    int y = nodeRef.location.second;
-    dc.SetBrush(*wxRED_BRUSH);
-    dc.SetPen(wxPen(wxColor(255, 0, 0), 2));
-    dc.DrawCircle(x, y, 5);
+    if (dc)
+    {
+        int x = nodeRef.location.first;
+        int y = nodeRef.location.second;
+        dc->SetBrush(*wxRED_BRUSH);
+        dc->SetPen(wxPen(wxColor(255, 0, 0), 2));
+        dc->DrawCircle(x, y, 5);
+    }
 }
 
 void Map::SetupGraph()
@@ -81,27 +84,30 @@ void Map::SetupGraph()
     graph.Display();
 }
 
-void Map::DrawEdge(wxDC &dc, pair<int, int> source, pair<int, int> destination)
+void Map::DrawEdge(pair<int, int> source, pair<int, int> destination)
 {
-    // Set pen color and width for the edge
-    dc.SetPen(wxPen(wxColor(0, 0, 0), 5));
+    if (dc)
+    {
+        // Set pen color and width for the edge
+        dc->SetPen(wxPen(wxColor(0, 0, 0), 5));
 
-    // Draw line between source and destination points
-    dc.DrawLine(source.first, source.second, destination.first, destination.second);
+        // Draw line between source and destination points
+        dc->DrawLine(source.first, source.second, destination.first, destination.second);
+    }
 }
 
-void Map::DrawGraph(wxDC &dc)
+void Map::DrawGraph()
 {
 
     for (auto &node : graph.GetNodes())
     {
         if (node.GetData().type() == typeid(Emergency))
         {
-            DrawNode(dc, any_cast<Emergency>(node.GetData()));
+            DrawNode(any_cast<Emergency>(node.GetData()));
         }
         else if (node.GetData().type() == typeid(Ambulance))
         {
-            DrawNode(dc, any_cast<Ambulance>(node.GetData()));
+            DrawNode(any_cast<Ambulance>(node.GetData()));
         }
     };
 };

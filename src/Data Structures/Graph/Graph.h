@@ -77,42 +77,42 @@ public:
     // Int 1 is Source Node (Emergency or Ambulance), Int 2 is Closest Ambulance or Hospital found by the algorithm
     pair<int, int> Dijkstra(int source)
     {
-        int n = adjacencyList.size();
-        vector<int> distance(n, numeric_limits<int>::max());
-        vector<int> parent(n, -1);
-        vector<bool> visited(n, false);
+        int size = adjacencyList.size();
+        vector<int> distance(size, numeric_limits<int>::max());
+        vector<int> parent(size, -1);
+        vector<bool> visited(size, false);
 
         distance[source] = 0;
 
         while (true)
         {
-            int u = -1;
-            int minDistance = numeric_limits<int>::max();
+            int minDistanceIndex = -1;                    // Index of Node with the lowest distance to source
+            int minDistance = numeric_limits<int>::max(); // Lowest distance value found so far, initialize to maximum value
 
             // Find the node with the minimum distance among unvisited nodes
-            for (int j = 0; j < n; ++j)
+            for (int i = 0; i < size; i++)
             {
-                if (!visited[j] && distance[j] < minDistance)
+                if (!visited[i] && distance[i] < minDistance)
                 {
-                    minDistance = distance[j];
-                    u = j;
+                    minDistance = distance[i];
+                    minDistanceIndex = i;
                 }
             }
 
-            if (u == -1) // If no unvisited nodes found
+            if (minDistanceIndex == -1) // If no unvisited nodes found
                 break;
 
-            visited[u] = true; // Mark the current node as visited
+            visited[minDistanceIndex] = true; // Mark the current node as visited
 
-            // Update distances to neighbors of u
-            for (const auto &neighbor : adjacencyList[u])
+            // Update distances to neighbors of minDistanceIndex
+            for (const auto &neighbor : adjacencyList[minDistanceIndex])
             {
-                int v = neighbor.first;
+                int nodeID = neighbor.first;
                 int weight = neighbor.second;
-                if (!visited[v] && distance[u] + weight < distance[v])
+                if (!visited[nodeID] && distance[minDistanceIndex] + weight < distance[nodeID])
                 {
-                    distance[v] = distance[u] + weight;
-                    parent[v] = u;
+                    distance[nodeID] = distance[minDistanceIndex] + weight;
+                    parent[nodeID] = minDistanceIndex;
                 }
             }
         }
@@ -121,7 +121,7 @@ public:
         bool destinationFound = false;
         int destination = -1;
         int minDistance = numeric_limits<int>::max(); // Initialize to maximum value
-        for (int i = 0; i < n; ++i)
+        for (int i = 0; i < size; ++i)
         {
             if (i != source && distance[i] < minDistance && distance[i] != numeric_limits<int>::max())
             {
@@ -136,9 +136,6 @@ public:
         {
             destination = -1;
         }
-
-        // Debug print to check destination
-        cout << "Destination: " << destination << endl;
 
         return {source, destination};
     }

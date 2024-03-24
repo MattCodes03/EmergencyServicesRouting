@@ -59,7 +59,7 @@ void CallHandler::RouteEmergency(wxCommandEvent &event, wxWindow &parent) const
 
     try
     {
-        // Get nodes;
+        // Get nodes
         Emergency source = any_cast<Emergency>(parentFrame->customPanels.GetMap().GetGraph().GetNodes()[edge.first].GetData());
 
         Ambulance destination = any_cast<Ambulance>(parentFrame->customPanels.GetMap().GetGraph().GetNodes()[edge.second].GetData());
