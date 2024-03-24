@@ -1,7 +1,6 @@
 #include "MainFrame.h"
 #include "Data Structures/Graph/Graph.h"
 
-
 using namespace std;
 
 MainFrame::MainFrame(const wxString &title) : wxFrame(nullptr, wxID_ANY, title)
@@ -11,20 +10,21 @@ MainFrame::MainFrame(const wxString &title) : wxFrame(nullptr, wxID_ANY, title)
 
 void MainFrame::Initialize()
 {
-	customPanels.InitialiseUser(view, *activeUser);
+	customPanels = new CustomPanels();
+	customPanels->InitialiseUser(view, *activeUser);
 
 	if (view == "HANDLER")
 	{
-		customPanels.CallHandlerPanel(this);
+		customPanels->CallHandlerPanel(this);
 	}
 
 	if (view == "RESPONDER")
 	{
-		customPanels.EmergencyResponderPanel(this);
+		customPanels->EmergencyResponderPanel(this);
 	}
 
 	if (view == "HOSPITAL")
 	{
-		customPanels.HospitalAdminPanel(this);
+		customPanels->HospitalAdminPanel(this);
 	}
 }

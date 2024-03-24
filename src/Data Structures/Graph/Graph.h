@@ -72,6 +72,9 @@ public:
             }
             std::cout << std::endl;
         }
+
+        std::cout << std::endl;
+        std::cout << std::endl;
     }
 
     // Int 1 is Source Node (Emergency or Ambulance), Int 2 is Closest Ambulance or Hospital found by the algorithm

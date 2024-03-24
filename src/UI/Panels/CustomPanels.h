@@ -2,6 +2,7 @@
 #define CUSTOMPANELS_H
 
 #include <wx/wx.h>
+#include "../../App.h"
 #include <any>
 #include <string>
 #include "../../Types/User/CallHandler.h"
@@ -13,6 +14,12 @@ class CustomPanels
 {
 public:
     CustomPanels(){};
+
+    ~CustomPanels() // Destructor to clean up resources
+    {
+        delete map;      // Delete the map object
+        delete database; // Delete the database object
+    }
 
     void EmergencyResponderPanel(wxWindow *parent);
     void CallHandlerPanel(wxWindow *parent);
@@ -34,6 +41,12 @@ public:
         {
             user = make_any<HospitalAdmin>(activeUser.getUsername());
         }
+    }
+
+    void Logout(wxCommandEvent &event)
+    {
+        user.reset();
+        App::GetInstance().Restart();
     }
 
     any user;

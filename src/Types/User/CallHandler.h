@@ -4,22 +4,35 @@
 #include <wx/wx.h>
 #include "User.h"
 #include "../../UI/Elements/Map.h"
+#include <atomic>
 
 class CallHandler : public User
 {
 public:
     CallHandler(){};
-    CallHandler(const string &username, const string &firstname, const string &lastname);
+    CallHandler(const string &username, const string &firstname, const string &lastname) : username(username), firstname(firstname), lastname(lastname), keepRunning(true){};
 
     void AcceptEmergency(wxCommandEvent &event, wxWindow &parent) const;
     void PrioritiseEmergency(wxCommandEvent &event, wxWindow &parent, Emergency emergency, int emergencyPriority);
-    void RouteEmergency(wxCommandEvent &event, wxWindow &parent) const;
+    void RouteEmergency(wxWindow &parent) const;
+    void CheckAndRouteEmergency(wxWindow &parent);
+    void CheckAndRouteLoop(wxWindow &parent);
 
-    string GetName() { return firstname + " " + lastname; };
+    void StopCheckAndRouteLoop()
+    {
+        keepRunning = false; // Set the flag to false to stop the loop
+    }
+
+    string GetName()
+    {
+        return firstname + " " + lastname;
+    };
 
     string firstname;
     string lastname;
     string username;
+
+    bool keepRunning;
 };
 
 #endif

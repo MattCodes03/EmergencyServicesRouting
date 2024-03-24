@@ -33,6 +33,12 @@ void Map::DrawNode(const Ambulance &nodeRef)
         dc->SetPen(wxPen(wxColor(0, 0, 255), 2));
         dc->DrawCircle(x, y, 5);
     }
+    else if (!nodeRef.available)
+    {
+        dc->SetBrush(*wxBLACK_BRUSH);
+        dc->SetPen(wxPen(wxColor(128, 128, 128), 2));
+        dc->DrawCircle(x, y, 5);
+    }
 }
 
 void Map::DrawNode(const Emergency &nodeRef)
@@ -61,8 +67,6 @@ void Map::SetupGraph()
         }
     };
 
-    set<pair<int, int>> visitedEdges; // Maintain a set to store visited edges
-
     for (Emergency emergency : database->GetEmergencies())
     {
         if (!emergency.complete && emergency.respondedTo)
@@ -70,29 +74,12 @@ void Map::SetupGraph()
             graph.AddNode(Node(emergency.emergencyNumber, any_cast<Emergency>(emergency)));
             for (Ambulance ambulance : ambulances)
             {
-                if (ambulance.available && visitedEdges.find({emergency.emergencyNumber, ambulance.unitNumber}) == visitedEdges.end())
+                if (ambulance.available)
                 {
-                    // Edge does not exist, add it to the graph
                     graph.AddEdge(emergency.emergencyNumber, ambulance.unitNumber, graph.CalculateDistance(emergency.location, ambulance.location));
-                    // Add the edge to the visited set
-                    visitedEdges.insert({emergency.emergencyNumber, ambulance.unitNumber});
                 }
             }
         }
-    }
-
-    graph.Display();
-}
-
-void Map::DrawEdge(pair<int, int> source, pair<int, int> destination)
-{
-    if (dc)
-    {
-        // Set pen color and width for the edge
-        dc->SetPen(wxPen(wxColor(0, 0, 0), 5));
-
-        // Draw line between source and destination points
-        dc->DrawLine(source.first, source.second, destination.first, destination.second);
     }
 }
 
@@ -110,9 +97,17 @@ void Map::DrawGraph()
             DrawNode(any_cast<Ambulance>(node.GetData()));
         }
     };
+
+    // Draw the edges
+    for (const auto &edge : edges)
+    {
+        dc->SetPen(wxPen(wxColor(0, 0, 0), 3));
+        dc->DrawLine(edge.first.first, edge.first.second, edge.second.first, edge.second.second);
+    }
 };
 
 void Map::OnDatabaseChange()
 {
     Refresh();
+    SetupGraph();
 };

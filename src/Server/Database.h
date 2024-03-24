@@ -24,6 +24,7 @@ public:
     SQLite::Database *database;
 
     void InitializeDatabase();
+    int GetUserCount();
 
     void AddListener(DatabaseListener *listener);
     void RemoveListener(DatabaseListener *listener);

@@ -6,7 +6,10 @@
 class App : public wxApp
 {
 public:
+	static App &GetInstance();
+
 	bool OnInit();
+	void Restart();
 };
 
 #endif

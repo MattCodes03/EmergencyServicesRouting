@@ -9,11 +9,34 @@ wxIMPLEMENT_APP(App);
 
 using namespace std;
 
+void App::Restart()
+{
+
+    // Destroy the main frame
+    wxWindow *mainFrame = wxTheApp->GetTopWindow();
+    if (mainFrame)
+    {
+        mainFrame->Destroy();
+    }
+
+    // Reinitialize the application
+    OnInit();
+}
+
+App &App::GetInstance()
+{
+    static App instance;
+    return instance;
+}
+
 bool App::OnInit()
 {
     // Initialise the Database - Using Smart Pointers here to prevent memory leaks.
     unique_ptr<Database> database = make_unique<Database>();
-    database->InitializeDatabase();
+    if (database->GetUserCount() == 0)
+    {
+        database->InitializeDatabase();
+    }
 
     // Setup the GUI
     unique_ptr<MainFrame> mainFrame = make_unique<MainFrame>("Emergency Services Routing");

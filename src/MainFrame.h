@@ -14,6 +14,11 @@ class MainFrame : public wxFrame
 public:
 	MainFrame(const wxString &title);
 
+	~MainFrame()
+	{
+		delete customPanels; // Ensure proper cleanup
+	}
+
 	void Initialize();
 
 	void SetViewType(string v) { view = v; }
@@ -25,7 +30,7 @@ public:
 
 	unique_ptr<User> activeUser;
 
-	CustomPanels customPanels;
+	CustomPanels *customPanels;
 
 private:
 	string view;

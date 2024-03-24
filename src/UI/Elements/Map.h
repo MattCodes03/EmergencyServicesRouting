@@ -23,8 +23,6 @@ public:
 
     Graph &GetGraph() { return this->graph; };
 
-    void DrawEdge(pair<int, int> source, pair<int, int> destination);
-
     // Copy assignment operator
     Map &operator=(const Map &other)
     {
@@ -35,10 +33,18 @@ public:
         return *this;
     }
 
+    void AddEdge(pair<int, int> source, pair<int, int> destination)
+    {
+        edges.push_back({source, destination});
+    }
+
 private:
     Graph graph;
 
-    wxDC *dc = nullptr;
+    using PairOfPairs = std::pair<std::pair<int, int>, std::pair<int, int>>;
+    vector<PairOfPairs> edges;
+
+    wxDC *dc;
 
     void DrawGraph();
     void DrawNode(const Ambulance &nodeRef);

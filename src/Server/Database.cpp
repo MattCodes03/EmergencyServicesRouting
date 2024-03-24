@@ -6,6 +6,24 @@ Database::Database()
     database = new SQLite::Database("EmergencyRouting.db3", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
 };
 
+int Database::GetUserCount()
+{
+    int count = 0;
+    try
+    {
+        SQLite::Statement query(*database, "SELECT COUNT(*) FROM users");
+        if (query.executeStep())
+        {
+            count = query.getColumn(0).getInt();
+        }
+    }
+    catch (const std::exception &ex)
+    {
+        std::cerr << "Error getting user count: " << ex.what() << std::endl;
+    }
+    return count;
+}
+
 void Database::InitializeDatabase()
 {
     database->exec("DROP TABLE IF EXISTS users");
@@ -113,7 +131,7 @@ void Database::GeneratePsuedoData()
 
     // Fake Emergencies - Update this with better data once app development is further along.
     database->exec("INSERT INTO emergencies VALUES (1, \"(40, 150)\", 1, 0, 0, \"Test1\")");
-    database->exec("INSERT INTO emergencies VALUES (2, \"(500, 550)\", 1, 1, 1, \"Test2\")");
+    database->exec("INSERT INTO emergencies VALUES (2, \"(200, 300)\", 1, 0, 0, \"Test2\")");
     database->exec("INSERT INTO emergencies VALUES (3, \"(50, 60)\", 1, 0, 0, \"Test3\")");
 
     // Fake Ambulances
