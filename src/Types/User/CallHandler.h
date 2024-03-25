@@ -4,7 +4,6 @@
 #include <wx/wx.h>
 #include "User.h"
 #include "../../UI/Elements/Map.h"
-#include <atomic>
 
 class CallHandler : public User
 {

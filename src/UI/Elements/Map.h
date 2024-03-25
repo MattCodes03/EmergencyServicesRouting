@@ -13,7 +13,7 @@ class Map : public wxPanel, public DatabaseListener
 {
 public:
     Map() : graph(50, 47){};
-    Map(wxWindow *parent) : wxPanel(parent), graph(50, 47){};
+    Map(wxWindow *parent, wxPanel *parentPanel) : wxPanel(parent), graph(50, 47), parent(parent), parentPanel(parentPanel){};
 
     void OnDatabaseChange() override;
 
@@ -38,17 +38,26 @@ public:
         edges.push_back({source, destination});
     }
 
+    void SetMapType(string mapType)
+    {
+        this->mapType = mapType;
+    }
+
 private:
+    string mapType;
     Graph graph;
 
     using PairOfPairs = std::pair<std::pair<int, int>, std::pair<int, int>>;
     vector<PairOfPairs> edges;
 
     wxDC *dc;
+    wxWindow *parent;
+    wxPanel *parentPanel;
 
     void DrawGraph();
-    void DrawNode(const Ambulance &nodeRef);
-    void DrawNode(const Emergency &nodeRef);
+
+    template <typename NodeType>
+    void DrawNode(const NodeType &nodeRef);
 
     DECLARE_EVENT_TABLE();
 };

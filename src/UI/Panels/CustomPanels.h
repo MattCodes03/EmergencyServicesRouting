@@ -2,18 +2,19 @@
 #define CUSTOMPANELS_H
 
 #include <wx/wx.h>
-#include "../../App.h"
-#include <any>
-#include <string>
+#include "../../MainFrame.h"
 #include "../../Types/User/CallHandler.h"
 #include "../../Types/User/EmergencyResponder.h"
 #include "../../Types/User/HospitalAdmin.h"
+#include "../../App.h"
+#include <any>
+#include <string>
 #include "../Elements/Map.h"
 
-class CustomPanels
+class CustomPanels : public wxPanel
 {
 public:
-    CustomPanels(){};
+    CustomPanels(wxWindow *parent) : wxPanel(parent){};
 
     ~CustomPanels() // Destructor to clean up resources
     {
@@ -29,17 +30,17 @@ public:
     {
         if (type == "HANDLER")
         {
-            user = make_any<CallHandler>(activeUser.getUsername(), "Matthew", "McCann");
+            user = std::make_any<CallHandler>(activeUser.getUsername(), "Matthew", "McCann");
         }
 
         if (type == "RESPONDER")
         {
-            user = make_any<EmergencyResponder>(activeUser.getUsername(), 12);
+            user = std::make_any<EmergencyResponder>(activeUser.getUsername());
         }
 
         if (type == "HOPSITAL")
         {
-            user = make_any<HospitalAdmin>(activeUser.getUsername());
+            user = std::make_any<HospitalAdmin>(activeUser.getUsername());
         }
     }
 
@@ -50,6 +51,7 @@ public:
             timer->Stop();
             delete timer;
         }
+
         user.reset();
         App::GetInstance().Restart();
     }

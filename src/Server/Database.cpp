@@ -43,6 +43,8 @@ void Database::InitializeDatabase()
     // Ambulance Table
     database->exec("CREATE TABLE ambulance (unitNumber INTEGER PRIMARY KEY, location VARCHAR, status INTEGER, available INTEGER, active_emergency INTEGER, CONSTRAINT fk_active_emergency FOREIGN KEY(active_emergency) REFERENCES emergencies(emergencyID))");
 
+    database->exec("CREATE TABLE hospital (hospitalNumber INTEGER PRIMARY KEY, location VARCHAR, status INTEGER)");
+
     // Commit Transaction
     transaction.commit();
 
@@ -136,7 +138,12 @@ void Database::GeneratePsuedoData()
 
     // Fake Ambulances
     database->exec("INSERT INTO ambulance VALUES (8, \"(50, 50)\", 1, 1, 0)");
-    database->exec("INSERT INTO ambulance VALUES (9, \"(60, 80)\", 1, 1, 0)");
+    database->exec("INSERT INTO ambulance VALUES (9, \"(100, 80)\", 1, 1, 0)");
+
+    // Fake Hospitals
+    database->exec("INSERT INTO hospital VALUES (15, \"(60, 450)\", 1)");
+    database->exec("INSERT INTO hospital VALUES (16, \"(150, 260)\", 1)");
+    database->exec("INSERT INTO hospital VALUES (17, \"(50, 260)\", 0)");
 
     // Commit Transaction
     psuedoDataTransaction.commit();
@@ -209,4 +216,18 @@ vector<Ambulance> Database::GetAmbulances()
     }
 
     return ambulances;
+};
+
+vector<Hospital> Database::GetHospitals()
+{
+    vector<Hospital> hospitals;
+    SQLite::Statement query(*database, "SELECT * FROM hospital");
+    while (query.executeStep())
+    {
+        pair<int, int> location = ConvertLocation((string)query.getColumn(1));
+        bool status = query.getColumn(2).getInt() != 0;
+        hospitals.push_back(Hospital(query.getColumn(0), location, status));
+    }
+
+    return hospitals;
 };

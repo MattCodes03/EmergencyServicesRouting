@@ -10,7 +10,7 @@ MainFrame::MainFrame(const wxString &title) : wxFrame(nullptr, wxID_ANY, title)
 
 void MainFrame::Initialize()
 {
-	customPanels = new CustomPanels();
+	customPanels = new CustomPanels(this);
 	customPanels->InitialiseUser(view, *activeUser);
 
 	if (view == "HANDLER")

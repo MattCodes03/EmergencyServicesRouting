@@ -1,7 +1,8 @@
 #include "LoginDialog.h"
 
 BEGIN_EVENT_TABLE(LoginDialog, wxDialog)
-EVT_UPDATE_UI(wxID_OK,LoginDialog::onUpdateOKButton)
+EVT_UPDATE_UI(wxID_OK, LoginDialog::onUpdateOKButton)
+EVT_BUTTON(wxID_CANCEL, LoginDialog::onCancelButtonClicked)
 END_EVENT_TABLE()
 
 LoginDialog::LoginDialog(wxWindow *parent, wxWindowID id,
@@ -39,6 +40,12 @@ void LoginDialog::onUpdateOKButton(wxUpdateUIEvent &event)
     {
         event.Enable(true);
     }
+}
+
+void LoginDialog::onCancelButtonClicked(wxCommandEvent &event)
+{
+    Destroy();
+    Close();
 }
 
 bool LoginDialog::TransferDataFromWindow()

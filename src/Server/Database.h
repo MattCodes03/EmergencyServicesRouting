@@ -5,6 +5,7 @@
 #include <SQLiteCpp/SQLiteCpp.h>
 #include "../Types/Nodes/Emergency.h"
 #include "../Types/Nodes/Ambulance.h"
+#include "../Types/Nodes/Hospital.h"
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -36,6 +37,7 @@ public:
     vector<Emergency> GetEmergencies();
     vector<Emergency> GetUnRespondedEmergencies();
     vector<Ambulance> GetAmbulances();
+    vector<Hospital> GetHospitals();
 
 private:
     void GeneratePsuedoData();

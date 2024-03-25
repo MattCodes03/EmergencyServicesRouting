@@ -1,5 +1,5 @@
 #include "EmergencyResponder.h"
 
-EmergencyResponder::EmergencyResponder(const string &username, const int &unitNumber) : User(username)
+EmergencyResponder::EmergencyResponder(const string &username) : User(username), unitNumber(0)
 {
 }

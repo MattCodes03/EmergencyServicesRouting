@@ -69,7 +69,7 @@ bool App::OnInit()
             }
             else
             {
-                cout << "Failed to login!" << endl;
+                wxMessageBox("Login Credentials Incorrect!", "Login Failed", wxOK | wxICON_ERROR, mainFrame.get());
             }
         }
     };

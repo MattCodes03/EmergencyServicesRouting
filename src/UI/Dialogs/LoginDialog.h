@@ -30,6 +30,8 @@ private:
 
     void onUpdateOKButton(wxUpdateUIEvent &event);
 
+    void onCancelButtonClicked(wxCommandEvent &event);
+
     DECLARE_EVENT_TABLE()
 };
 

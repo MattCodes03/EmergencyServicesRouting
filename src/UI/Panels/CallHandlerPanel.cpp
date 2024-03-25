@@ -47,7 +47,6 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
         {
             timer->Stop();
             delete timer;
-            timer = nullptr;
         }
 
         // Use a timer to temporarily disable the button, this is done to prevent users overloading the system by spamming emergencies
@@ -62,8 +61,9 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
 
     sizer->Add(acceptEmergencyButton, 0, wxALIGN_CENTER | wxALL, 10);
 
-    map = new Map(panel);
+    map = new Map(panel, this);
     database->AddListener(map);
+    map->SetMapType("HANDLER");
     sizer->Add(map, 1, wxEXPAND);
 
     // Setting the sizer for the panel

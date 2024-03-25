@@ -9,6 +9,9 @@
 
 using namespace std;
 
+// Forward Declartion for member value
+class CustomPanels;
+
 class MainFrame : public wxFrame
 {
 public:

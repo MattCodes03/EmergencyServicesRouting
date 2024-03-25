@@ -6,14 +6,12 @@
 class EmergencyResponder : public User
 {
 public:
-    EmergencyResponder(const string &username, const int &unitNumber);
+    EmergencyResponder(const string &username);
 
-    void generateHospitalRoute(int &numOfPaitents);
-    void sendFeedback(int &emergencyNumber);
+    void generateHospitalRoute();
     void completeEmergency();
 
     int unitNumber;
-    // Emergency activeEmergency - Implement this once Emergency Class has been created.
 };
 
 #endif
