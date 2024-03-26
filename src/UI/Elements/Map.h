@@ -28,6 +28,7 @@ public:
     {
         if (this != &other)
         {
+            this->mapType = other.mapType;
             this->graph = other.graph;
         }
         return *this;

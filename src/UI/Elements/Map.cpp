@@ -154,5 +154,4 @@ void Map::DrawGraph()
 void Map::OnDatabaseChange()
 {
     Refresh();
-    SetupGraph();
 };

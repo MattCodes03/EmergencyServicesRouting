@@ -94,6 +94,7 @@
     "complex": "cpp",
     "cwctype": "cpp",
     "source_location": "cpp",
-    "resumable": "cpp"
+    "resumable": "cpp",
+    "shared_mutex": "cpp"
   }
 }

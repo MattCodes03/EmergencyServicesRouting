@@ -30,17 +30,17 @@ public:
     {
         if (type == "HANDLER")
         {
-            user = std::make_any<CallHandler>(activeUser.getUsername(), "Matthew", "McCann");
+            user = make_any<CallHandler>(activeUser.getUsername(), "Matthew", "McCann");
         }
 
         if (type == "RESPONDER")
         {
-            user = std::make_any<EmergencyResponder>(activeUser.getUsername());
+            user = make_any<EmergencyResponder>(activeUser.getUsername());
         }
 
         if (type == "HOPSITAL")
         {
-            user = std::make_any<HospitalAdmin>(activeUser.getUsername());
+            user = make_any<HospitalAdmin>(activeUser.getUsername());
         }
     }
 
@@ -51,7 +51,7 @@ public:
             timer->Stop();
             delete timer;
         }
-        
+
         App::GetInstance().Restart();
     }
 

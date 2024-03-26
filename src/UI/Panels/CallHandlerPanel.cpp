@@ -12,6 +12,15 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
 
     auto userRef = std::any_cast<CallHandler>(user);
 
+    /*
+    Route Emergency Thread, this will create another thread that will periodically check if any emergencies are in the queue to be routed,
+    this means all routing is done automatically
+    */
+
+    std::thread routingThread([userRef, parent]()
+                              { userRef.CheckAndRouteLoop(*parent); });
+    routingThread.detach();
+
     wxFont titleFont(wxFontInfo(wxSize(0, 36)).Bold());
     wxFont mainFont(wxFontInfo(wxSize(0, 24)));
 
@@ -39,7 +48,6 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
     wxButton *acceptEmergencyButton = new wxButton(panel, wxID_ANY, _("Accept Incoming Emergency"));
     acceptEmergencyButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, userRef, parent, acceptEmergencyButton](wxCommandEvent &event) { // Disable the button
         acceptEmergencyButton->Disable();
-        std::cout << "Button disabled\n";
 
         userRef.AcceptEmergency(event, *parent);
 
@@ -52,10 +60,8 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
         // Use a timer to temporarily disable the button, this is done to prevent users overloading the system by spamming emergencies
         timer = new wxTimer();
         timer->Bind(wxEVT_TIMER, [acceptEmergencyButton](wxTimerEvent &event)
-                    {acceptEmergencyButton->Enable(); 
-                   std::cout << "Button enabled\n"; });
+                    { acceptEmergencyButton->Enable(); });
         timer->StartOnce(5000); // 5 seconds
-        std::cout << "Timer Started\n";
 
     });
 

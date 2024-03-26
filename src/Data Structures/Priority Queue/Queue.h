@@ -4,6 +4,8 @@
 #include <vector>
 #include "../Utils.h"
 #include <iostream>
+#include <memory>
+#include <mutex>
 
 using namespace std;
 
@@ -30,6 +32,8 @@ public:
 
     void DeQueue()
     {
+        lock_guard<mutex> lock(*queueMutex);
+
         // Check if the queue is not empty before dequeuing
         if (!queue.empty())
         {
@@ -61,8 +65,15 @@ public:
         return queue;
     }
 
+    // Mutex is used to ensure thread safety during emergency routing process
+    mutex &GetMutex()
+    {
+        return *queueMutex;
+    }
+
 private:
     vector<T> queue{};
+    shared_ptr<mutex> queueMutex = make_shared<mutex>();
 };
 
 #endif
