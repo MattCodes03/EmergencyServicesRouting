@@ -1,3 +1,4 @@
+
 #include "CallHandler.h"
 #include "../../UI/Dialogs/EmergencyDialog.h"
 #include "../../Data Structures/Utils.h"
@@ -5,6 +6,7 @@
 #include "../../MainFrame.h"
 #include <chrono>
 #include <thread>
+
 
 template class Queue<Emergency>;
 
@@ -78,10 +80,11 @@ void CallHandler::CheckAndRouteEmergency(wxWindow &parent)
 {
     MainFrame *parentFrame = dynamic_cast<MainFrame *>(&parent);
 
-    if (parentFrame)
+    if (parentFrame && parentFrame->customPanels)
     {
-
-        if (!parentFrame->customPanels->GetMap().GetGraph().queue.GetQueue().empty())
+        auto& queue = parentFrame->customPanels->GetMap().GetGraph().queue;
+        
+        if (!queue.GetQueue().empty())
         {
             try
             {
@@ -94,30 +97,59 @@ void CallHandler::CheckAndRouteEmergency(wxWindow &parent)
             }
         }
     }
+    else
+    {
+        std::cerr << "Error: Invalid parent frame or custom panels\n";
+    }
 }
 
 void CallHandler::RouteEmergency(wxWindow &parent) const
 {
     MainFrame *parentFrame = dynamic_cast<MainFrame *>(&parent);
-    if (parentFrame)
+     if (parentFrame)
     {
+        auto graph = parentFrame->customPanels->GetMap().GetGraph();
+        auto queue = graph.queue;
+        const auto &nodes = graph.GetNodes();
 
-        pair<int, int> edge = parentFrame->customPanels->GetMap().GetGraph().Dijkstra(parentFrame->customPanels->GetMap().GetGraph().queue.GetQueue()[0].emergencyNumber);
-
-        if (edge.second != -1)
+        if (!nodes.empty() && !queue.GetQueue().empty())
         {
-            // Get nodes
-            Emergency source = any_cast<Emergency>(parentFrame->customPanels->GetMap().GetGraph().GetNodes()[edge.first].GetData());
+            pair<int, int> edge = graph.Dijkstra(queue.GetQueue()[0].emergencyNumber);
 
-            Ambulance destination = any_cast<Ambulance>(parentFrame->customPanels->GetMap().GetGraph().GetNodes()[edge.second].GetData());
+            if (edge.second != -1)
+            {
+                const auto& sourceNode = nodes[edge.first];
+                const auto& destinationNode = nodes[edge.second];
 
-            parentFrame->customPanels->GetMap().GetGraph().queue.DeQueue();
+                try{
+                    // Get nodes
+                    Emergency source = any_cast<Emergency>(sourceNode.GetData());
+                    Ambulance destination = any_cast<Ambulance>(destinationNode.GetData());
 
-            // Draw the edge on the map between emergency and assigned ambulance
-            parentFrame->customPanels->GetMap().AddEdge(source.location, destination.location);
+                    queue.DeQueue();
 
-            // Update the database and assign this emergency to the ambulance and set ambulance availability to false so it doesn't get assigned multiple calls at once
-            parentFrame->customPanels->GetDatabase().UpdateRecord("ambulance", {"available", "active_emergency"}, {"0", "" + source.emergencyNumber}, "unitNumber = '" + to_string(destination.unitNumber) + "'");
+                    // Draw the edge on the map between emergency and assigned ambulance
+                    parentFrame->customPanels->GetMap().AddEdge(source.location, destination.location);
+
+                    // Update the database and assign this emergency to the ambulance and set ambulance availability to false so it doesn't get assigned multiple calls at once
+                    parentFrame->customPanels->GetDatabase().UpdateRecord("ambulance", {"available", "active_emergency"}, {"0", "" + source.emergencyNumber}, "unitNumber = '" + to_string(destination.unitNumber) + "'");
+                }
+                catch(const std::bad_any_cast&){
+                    std::cerr << "Error: Invalid source or destination node\n";
+                }
+            }
+            else
+            {
+                std::cerr << "Error: Unable to find a route for emergency\n";
+            }
         }
+        else
+        {
+            std::cerr << "Error: Empty nodes or queue\n";
+        }
+    }
+    else
+    {
+        std::cerr << "Error: Invalid parent frame\n";
     }
 }

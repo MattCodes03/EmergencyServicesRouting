@@ -51,8 +51,7 @@ public:
             timer->Stop();
             delete timer;
         }
-
-        user.reset();
+        
         App::GetInstance().Restart();
     }
 

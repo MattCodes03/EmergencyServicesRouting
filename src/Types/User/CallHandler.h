@@ -4,11 +4,12 @@
 #include <wx/wx.h>
 #include "User.h"
 #include "../../UI/Elements/Map.h"
+#include <atomic>
 
 class CallHandler : public User
 {
 public:
-    CallHandler(){};
+    CallHandler(){}
     CallHandler(const string &username, const string &firstname, const string &lastname) : username(username), firstname(firstname), lastname(lastname), keepRunning(true){};
 
     void AcceptEmergency(wxCommandEvent &event, wxWindow &parent) const;

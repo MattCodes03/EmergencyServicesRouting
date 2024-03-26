@@ -16,7 +16,7 @@ void App::Restart()
     wxWindow *mainFrame = wxTheApp->GetTopWindow();
     if (mainFrame)
     {
-        mainFrame->Destroy();
+        delete mainFrame;
     }
 
     // Reinitialize the application
