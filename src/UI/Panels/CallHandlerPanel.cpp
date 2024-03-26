@@ -12,15 +12,6 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
 
     auto userRef = std::any_cast<CallHandler>(user);
 
-    /*
-    Route Emergency Thread, this will create another thread that will periodically check if any emergencies are in the queue to be routed,
-    this means all routing is done automatically
-    */
-
-    std::thread routingThread([userRef, parent]()
-                              { userRef.CheckAndRouteLoop(*parent); });
-    routingThread.detach();
-
     wxFont titleFont(wxFontInfo(wxSize(0, 36)).Bold());
     wxFont mainFont(wxFontInfo(wxSize(0, 24)));
 
@@ -76,4 +67,14 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
     panel->SetSizer(sizer);
     // Refreshing the layout
     panel->Layout();
+
+
+     /*
+    Route Emergency Thread, this will create another thread that will periodically check if any emergencies are in the queue to be routed,
+    this means all routing is done automatically
+    */
+
+    std::thread routingThread([userRef, parent]()
+                              { userRef.CheckAndRouteLoop(*parent); });
+    routingThread.detach();
 }
