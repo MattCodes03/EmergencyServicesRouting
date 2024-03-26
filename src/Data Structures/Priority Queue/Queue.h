@@ -32,7 +32,6 @@ public:
 
     void DeQueue()
     {
-        lock_guard<mutex> lock(*queueMutex);
 
         // Check if the queue is not empty before dequeuing
         if (!queue.empty())

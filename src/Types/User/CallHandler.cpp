@@ -12,7 +12,7 @@ template class Queue<Emergency>;
 void CallHandler::CheckAndRouteLoop(wxWindow &parent) const
 {
 
-    while (keepRunning)
+    while (keepRouting.load())
     {
         // Route emergencies
         RouteEmergency(parent);
@@ -45,6 +45,8 @@ void CallHandler::AcceptEmergency(wxCommandEvent &event, wxWindow &parent) const
                 emergency.SetDescription(activeEmergency.description);
                 // Show emergency
                 emergency.ShowModal();
+
+                parentFrame->customPanels->GetDatabase().UpdateRecord("emergencies", {"respondedTo"}, {"1"}, "emergencyID='" + to_string(activeEmergency.emergencyNumber) + "'");
             }
             else
             {
@@ -63,9 +65,6 @@ void CallHandler::PrioritiseEmergency(wxCommandEvent &event, wxWindow &parent, E
         {
 
             emergency.priority = emergencyPriority;
-            // Update Database and set Emergency as RespondedTo
-            parentFrame->customPanels->GetDatabase().UpdateRecord("emergencies", {"respondedTo"}, {"1"}, "emergencyID='" + to_string(emergency.emergencyNumber) + "'");
-
             parentFrame->customPanels->GetMap().GetGraph().queue.EnQueue(emergency);
         }
     }
@@ -74,17 +73,20 @@ void CallHandler::PrioritiseEmergency(wxCommandEvent &event, wxWindow &parent, E
 void CallHandler::RouteEmergency(wxWindow &parent) const
 {
     MainFrame *parentFrame = dynamic_cast<MainFrame *>(&parent);
+    std::cout << "RouteEmergency started." << std::endl;
     if (parentFrame)
     {
+        cout << "ParentFrame found." << endl;
         if (parentFrame->customPanels)
         {
-
-            auto graph = parentFrame->customPanels->GetMap().GetGraph();
-            graph.queue.Display();
+            Graph &graph = parentFrame->customPanels->GetMap().GetGraph();
+            cout << "Custom Panel found." << endl;
 
             if (!graph.queue.GetQueue().empty())
             {
-                lock_guard<mutex> lock(graph.queue.GetMutex());
+                cout << "Queue is not empty about to lock queue mutex" << endl;
+                // Lock the mutex
+                graph.queue.GetMutex().lock();
 
                 int source = graph.queue.GetQueue()[0].emergencyNumber;
                 pair<int, int> edge = graph.Dijkstra(source);
@@ -105,12 +107,14 @@ void CallHandler::RouteEmergency(wxWindow &parent) const
                     parentFrame->customPanels->GetDatabase().UpdateRecord("ambulance", {"available", "active_emergency"}, {"0", "" + source.emergencyNumber}, "unitNumber = '" + to_string(destination.unitNumber) + "'");
 
                     graph.queue.DeQueue();
-                    graph.queue.Display();
                 }
                 else
                 {
                     std::cerr << "Error: Unable to find a route for emergency\n";
                 }
+
+                // Unlock the mutex
+                graph.queue.GetMutex().unlock();
             }
             else
             {
@@ -122,4 +126,6 @@ void CallHandler::RouteEmergency(wxWindow &parent) const
             std::cerr << "Error: Invalid parent frame\n";
         }
     }
+
+    std::cout << "RouteEmergency ended" << std::endl;
 }

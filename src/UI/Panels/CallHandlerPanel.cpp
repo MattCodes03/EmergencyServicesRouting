@@ -68,11 +68,10 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
     // Refreshing the layout
     panel->Layout();
 
-
-     /*
-    Route Emergency Thread, this will create another thread that will periodically check if any emergencies are in the queue to be routed,
-    this means all routing is done automatically
-    */
+    /*
+   Route Emergency Thread, this will create another thread that will periodically check if any emergencies are in the queue to be routed,
+   this means all routing is done automatically
+   */
 
     std::thread routingThread([userRef, parent]()
                               { userRef.CheckAndRouteLoop(*parent); });
