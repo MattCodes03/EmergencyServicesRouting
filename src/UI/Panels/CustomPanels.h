@@ -33,6 +33,9 @@ public:
         if (type == "HANDLER")
         {
             user = make_any<CallHandler>(activeUser.getUsername(), "Matthew", "McCann");
+            // Set the stop routing callback
+            SetStopRoutingCallback([this]()
+                                   { any_cast<CallHandler>(user).StopRoutingThread(); });
         }
 
         if (type == "RESPONDER")
@@ -49,17 +52,10 @@ public:
     void Logout(wxCommandEvent &event)
     {
         // Stop the Emergency Routing Thread if user was logged in as Callhandler
-        if (user.type() == typeid(CallHandler))
+        if (stopRoutingCallback)
         {
-            try
-            {
-                CallHandler &userRef = any_cast<CallHandler &>(user);
-                userRef.StopRoutingThread();
-            }
-            catch (const std::exception &e)
-            {
-                std::cerr << e.what() << '\n';
-            }
+            // Call the callback to stop the routing thread
+            stopRoutingCallback();
         }
 
         if (timer)

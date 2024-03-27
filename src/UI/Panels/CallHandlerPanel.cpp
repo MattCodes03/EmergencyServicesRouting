@@ -26,10 +26,6 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
 
     panel->SetFont(mainFont);
 
-    map = new Map(panel, this);
-    database->AddListener(map);
-    map->SetMapType("HANDLER");
-
     // Adding a sizer to manage layout
     wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 
@@ -66,6 +62,11 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
     });
 
     sizer->Add(acceptEmergencyButton, 0, wxALIGN_CENTER | wxALL, 10);
+
+    map = new Map(panel, this);
+    database->AddListener(map);
+    map->SetMapType("HANDLER");
+
     sizer->Add(map, 1, wxEXPAND);
 
     // Setting the sizer for the panel
@@ -74,8 +75,8 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
     panel->Layout();
 
     // Route Emergency Thread
-    std::thread([&]()
-                {
+    thread([&]()
+           {
         while (userRef.keepRouting.load()) // Continue loop while keepRouting is true
         {
             cout << "Thread!" << endl;
