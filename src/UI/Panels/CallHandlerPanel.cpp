@@ -3,6 +3,7 @@
 #include <thread>
 #include <chrono>
 #include <future>
+#include <atomic>
 
 BEGIN_EVENT_TABLE(Map, wxPanel)
 EVT_PAINT(Map::OnPaint)
@@ -74,17 +75,26 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
     panel->Layout();
 
     // Route Emergency Thread
-    std::thread([&userRef, parent]()
-                {
-        while (userRef.keepRouting.load()) // Continue loop while keepRouting is true
-        {
-            cout << "Thread!" << endl;
+    thread([this, userRef, parent]()
+           {
+               while (!terminateThread.load())
+               {
+                   cout << "Thread!" << endl;
 
-           // Route emergencies Asynchronously
-            auto asyncFunc = [&userRef](wxWindow* p) { userRef.RouteEmergency(*p); };
-            async(launch::async, asyncFunc, parent).wait();
+                   // Route emergencies Asynchronously
+                   auto asyncFunc = [this, &userRef](wxWindow *p)
+                   {
+                       if (!terminateThread.load()) // Check termination flag before routing
+                       {
+                           userRef.RouteEmergency(*p);
+                       }
+                   };
 
-            this_thread::sleep_for(chrono::seconds(5));
-        } })
+                   async(launch::async, asyncFunc, parent).wait();
+
+                   this_thread::sleep_for(chrono::seconds(5));
+               }
+               cout << "Routing thread terminated.\n";
+           })
         .detach();
 }

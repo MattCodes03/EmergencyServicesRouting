@@ -10,11 +10,13 @@
 #include <any>
 #include <string>
 #include "../Elements/Map.h"
+#include <mutex>
+#include <condition_variable>
 
 class CustomPanels : public wxPanel
 {
 public:
-    CustomPanels(wxWindow *parent) : wxPanel(parent){};
+    CustomPanels(wxWindow *parent) : wxPanel(parent), terminateThread(false){};
 
     ~CustomPanels() // Destructor to clean up resources
     {
@@ -35,7 +37,7 @@ public:
             user = make_any<CallHandler>(activeUser.getUsername(), "Matthew", "McCann");
             // Set the stop routing callback
             SetStopRoutingCallback([this]()
-                                   { any_cast<CallHandler>(user).StopRoutingThread(); });
+                                   { StopRoutingThread(); });
         }
 
         if (type == "RESPONDER")
@@ -47,6 +49,13 @@ public:
         {
             user = make_any<HospitalAdmin>(activeUser.getUsername());
         }
+    }
+
+    // Function to stop the routing thread
+    void StopRoutingThread()
+    {
+        // Set keepRouting to false
+        terminateThread.store(true);
     }
 
     void Logout(wxCommandEvent &event)
@@ -78,6 +87,13 @@ private:
     Map *map;
     Database *database = new Database();
     wxTimer *timer = nullptr;
+
+    // Declare a mutex and condition variable for synchronization
+    mutex mtx;
+    condition_variable cv;
+
+    // Initialize a termination flag for the thread
+    std::atomic<bool> terminateThread;
 
     function<void()> stopRoutingCallback;
 };
