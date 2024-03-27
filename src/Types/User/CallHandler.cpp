@@ -61,18 +61,14 @@ void CallHandler::PrioritiseEmergency(wxCommandEvent &event, wxWindow &parent, E
 void CallHandler::RouteEmergency(wxWindow &parent) const
 {
     MainFrame *parentFrame = dynamic_cast<MainFrame *>(&parent);
-    std::cout << "RouteEmergency started." << std::endl;
     if (parentFrame)
     {
-        cout << "ParentFrame found." << endl;
         if (parentFrame->customPanels)
         {
             Graph &graph = parentFrame->customPanels->GetMap().GetGraph();
-            cout << "Custom Panel found." << endl;
 
             if (!graph.queue.GetQueue().empty())
             {
-                cout << "Queue is not empty about to lock queue mutex" << endl;
                 // Lock the mutex
                 graph.queue.GetMutex().lock();
 
@@ -96,24 +92,10 @@ void CallHandler::RouteEmergency(wxWindow &parent) const
 
                     graph.queue.DeQueue();
                 }
-                else
-                {
-                    std::cerr << "Error: Unable to find a route for emergency\n";
-                }
 
                 // Unlock the mutex
                 graph.queue.GetMutex().unlock();
             }
-            else
-            {
-                std::cerr << "Error: Empty queue\n";
-            }
-        }
-        else
-        {
-            std::cerr << "Error: Invalid parent frame\n";
         }
     }
-
-    std::cout << "RouteEmergency ended" << std::endl;
 }

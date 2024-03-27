@@ -79,7 +79,7 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
            {
                while (!terminateThread.load())
                {
-                   cout << "Thread!" << endl;
+                   cout << "Thread Call!" << endl;
 
                    // Route emergencies Asynchronously
                    auto asyncFunc = [this, &userRef](wxWindow *p)
@@ -94,7 +94,6 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
 
                    this_thread::sleep_for(chrono::seconds(5));
                }
-               cout << "Routing thread terminated.\n";
-           })
+               cout << "Routing thread terminated!\n"; })
         .detach();
 }
