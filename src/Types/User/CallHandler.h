@@ -5,6 +5,7 @@
 #include "User.h"
 #include "../../UI/Elements/Map.h"
 #include <atomic>
+#include <thread>
 
 class CallHandler : public User
 {
@@ -29,13 +30,21 @@ public:
         return *this;
     }
 
+    // Destructor
+    ~CallHandler()
+    {
+        // Stop the routing thread if it's running
+        StopRoutingThread();
+    }
+
     void AcceptEmergency(wxCommandEvent &event, wxWindow &parent) const;
     void PrioritiseEmergency(wxCommandEvent &event, wxWindow &parent, Emergency emergency, int emergencyPriority);
-    void CheckAndRouteLoop(wxWindow &parent) const;
     void RouteEmergency(wxWindow &parent) const;
 
-    void StopCheckAndRouteLoop()
+    // Function to stop the routing thread
+    void StopRoutingThread()
     {
+        // Set keepRouting to false
         keepRouting.store(false);
     }
 
@@ -44,12 +53,12 @@ public:
         return firstname + " " + lastname;
     };
 
+    atomic<bool> keepRouting;
+
 private:
     string firstname;
     string lastname;
     string username;
-
-    atomic<bool> keepRouting;
 };
 
 #endif

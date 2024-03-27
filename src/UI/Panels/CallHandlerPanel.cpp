@@ -2,15 +2,21 @@
 #include <any>
 #include <thread>
 #include <chrono>
+#include <future>
 
 BEGIN_EVENT_TABLE(Map, wxPanel)
 EVT_PAINT(Map::OnPaint)
 END_EVENT_TABLE()
 
+void CustomPanels::SetStopRoutingCallback(std::function<void()> callback)
+{
+    stopRoutingCallback = callback;
+}
+
 void CustomPanels::CallHandlerPanel(wxWindow *parent)
 {
 
-    auto userRef = std::any_cast<CallHandler>(user);
+    auto userRef = any_cast<CallHandler>(user);
 
     wxFont titleFont(wxFontInfo(wxSize(0, 36)).Bold());
     wxFont mainFont(wxFontInfo(wxSize(0, 24)));
@@ -20,6 +26,10 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
 
     panel->SetFont(mainFont);
 
+    map = new Map(panel, this);
+    database->AddListener(map);
+    map->SetMapType("HANDLER");
+
     // Adding a sizer to manage layout
     wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 
@@ -28,8 +38,7 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
 
     wxButton *logoutButton = new wxButton(panel, wxID_ANY, _("Logout"));
     logoutButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, &userRef](wxCommandEvent &event)
-                       { userRef.StopCheckAndRouteLoop();
-                             Logout(event); });
+                       { Logout(event); });
 
     sizer->Add(logoutButton, 0, wxALIGN_RIGHT, 10);
     // Adding the text to the sizer
@@ -57,10 +66,6 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
     });
 
     sizer->Add(acceptEmergencyButton, 0, wxALIGN_CENTER | wxALL, 10);
-
-    map = new Map(panel, this);
-    database->AddListener(map);
-    map->SetMapType("HANDLER");
     sizer->Add(map, 1, wxEXPAND);
 
     // Setting the sizer for the panel
@@ -68,12 +73,18 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
     // Refreshing the layout
     panel->Layout();
 
-    /*
-   Route Emergency Thread, this will create another thread that will periodically check if any emergencies are in the queue to be routed,
-   this means all routing is done automatically
-   */
+    // Route Emergency Thread
+    std::thread([&]()
+                {
+        while (userRef.keepRouting.load()) // Continue loop while keepRouting is true
+        {
+            cout << "Thread!" << endl;
 
-    std::thread routingThread([userRef, parent]()
-                              { userRef.CheckAndRouteLoop(*parent); });
-    routingThread.detach();
+           // Route emergencies Asynchronously
+            auto asyncFunc = [&userRef](wxWindow* p) { userRef.RouteEmergency(*p); };
+            async(launch::async, asyncFunc, parent).wait();
+
+            this_thread::sleep_for(chrono::seconds(5));
+        } })
+        .detach();
 }

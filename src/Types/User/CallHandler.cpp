@@ -9,18 +9,6 @@
 
 template class Queue<Emergency>;
 
-void CallHandler::CheckAndRouteLoop(wxWindow &parent) const
-{
-
-    while (keepRouting.load())
-    {
-        // Route emergencies
-        RouteEmergency(parent);
-
-        this_thread::sleep_for(chrono::seconds(5));
-    }
-}
-
 void CallHandler::AcceptEmergency(wxCommandEvent &event, wxWindow &parent) const
 {
     EmergencyDialog emergency(&parent, wxID_ANY, _("Emergency"));

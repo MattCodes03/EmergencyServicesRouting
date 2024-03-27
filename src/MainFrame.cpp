@@ -15,6 +15,11 @@ void MainFrame::Initialize()
 
 	if (view == "HANDLER")
 	{
+		CallHandler callHandler;
+		// Set the stop routing callback
+		customPanels->SetStopRoutingCallback([&callHandler]()
+											{ callHandler.StopRoutingThread(); });
+
 		customPanels->CallHandlerPanel(this);
 	}
 

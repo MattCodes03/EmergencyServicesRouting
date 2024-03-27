@@ -26,6 +26,8 @@ public:
     void CallHandlerPanel(wxWindow *parent);
     void HospitalAdminPanel(wxWindow *parent);
 
+    void SetStopRoutingCallback(function<void()> callback);
+
     void InitialiseUser(const std::string &type, User &activeUser)
     {
         if (type == "HANDLER")
@@ -46,6 +48,20 @@ public:
 
     void Logout(wxCommandEvent &event)
     {
+        // Stop the Emergency Routing Thread if user was logged in as Callhandler
+        if (user.type() == typeid(CallHandler))
+        {
+            try
+            {
+                CallHandler &userRef = any_cast<CallHandler &>(user);
+                userRef.StopRoutingThread();
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << e.what() << '\n';
+            }
+        }
+
         if (timer)
         {
             timer->Stop();
@@ -66,6 +82,8 @@ private:
     Map *map;
     Database *database = new Database();
     wxTimer *timer = nullptr;
+
+    function<void()> stopRoutingCallback;
 };
 
 #endif
