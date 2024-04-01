@@ -82,13 +82,14 @@ void CallHandler::RouteEmergency(wxWindow &parent) const
 
                     // Get nodes
                     Emergency source = any_cast<Emergency>(sourceNode.GetData());
+                    cout << "Source Emergency Number -> " << source.emergencyNumber << endl;
                     Ambulance destination = any_cast<Ambulance>(destinationNode.GetData());
 
                     // Draw the edge on the map between emergency and assigned ambulance
                     parentFrame->customPanels->GetMap().AddEdge(source.location, destination.location);
 
                     // Update the database and assign this emergency to the ambulance and set ambulance availability to false so it doesn't get assigned multiple calls at once
-                    parentFrame->customPanels->GetDatabase().UpdateRecord("ambulance", {"available", "active_emergency"}, {"0", "" + source.emergencyNumber}, "unitNumber = '" + to_string(destination.unitNumber) + "'");
+                    parentFrame->customPanels->GetDatabase().UpdateRecord("ambulance", {"available", "active_emergency"}, {"0", to_string(source.emergencyNumber)}, "unitNumber = '" + to_string(destination.unitNumber) + "'");
 
                     graph.queue.DeQueue();
                 }

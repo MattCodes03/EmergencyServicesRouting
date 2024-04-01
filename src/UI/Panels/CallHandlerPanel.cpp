@@ -9,11 +9,6 @@ BEGIN_EVENT_TABLE(Map, wxPanel)
 EVT_PAINT(Map::OnPaint)
 END_EVENT_TABLE()
 
-void CustomPanels::SetStopRoutingCallback(std::function<void()> callback)
-{
-    stopRoutingCallback = callback;
-}
-
 void CustomPanels::CallHandlerPanel(wxWindow *parent)
 {
 
@@ -77,18 +72,24 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
     // Route Emergency Thread
     thread([this, userRef, parent]()
            {
-               while (!terminateThread.load())
+               while (!terminateThread.load(memory_order_acquire))
                {
                    cout << "Thread Call!" << endl;
 
                    // Route emergencies Asynchronously
                    auto asyncFunc = [this, &userRef](wxWindow *p)
                    {
-                       if (!terminateThread.load()) // Check termination flag before routing
+                       if (!terminateThread.load(memory_order_relaxed)) // Check termination flag before routing
                        {
                            userRef.RouteEmergency(*p);
                        }
                    };
+
+                {
+                lock_guard<std::mutex> lock(mtx); // Lock the mutex before accessing shared data
+                if (terminateThread.load(std::memory_order_relaxed)) // Re-check termination flag inside the critical section
+                    break; // Exit loop if termination signal received
+                }
 
                    async(launch::async, asyncFunc, parent).wait();
 

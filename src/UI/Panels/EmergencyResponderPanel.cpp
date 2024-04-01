@@ -1,9 +1,12 @@
 #include "CustomPanels.h"
 #include "../Dialogs/AmbulanceSelectDialog.h"
+#include <chrono>
+#include <future>
+#include <atomic>
 
 void CustomPanels::EmergencyResponderPanel(wxWindow *parent)
 {
-    EmergencyResponder &userRef = std::any_cast<EmergencyResponder &>(user);
+    auto &userRef = std::any_cast<EmergencyResponder &>(user);
 
     MainFrame *parentFrame = dynamic_cast<MainFrame *>(parent);
     if (parentFrame)
@@ -45,15 +48,37 @@ void CustomPanels::EmergencyResponderPanel(wxWindow *parent)
         // Adding a sizer to manage layout
         wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
 
-        wxStaticText *text = new wxStaticText(panel, wxID_ANY, "Emergency Responder View");
+        wxString unitText = wxString::Format("Unit #%d", userRef.unitNumber);
+        wxStaticText *text = new wxStaticText(panel, wxID_ANY, unitText);
         text->SetFont(mainFont);
-
-        // Adding the text to the sizer
-        sizer->Add(text, 0, wxALIGN_CENTER | wxALL, 10);
 
         wxButton *logoutButton = new wxButton(panel, wxID_ANY, _("Logout"));
         logoutButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, &userRef](wxCommandEvent &event)
                            { Logout(event); });
+
+        sizer->Add(logoutButton, 0, wxALIGN_RIGHT, 10);
+
+        // Adding the text to the sizer
+        sizer->Add(text, 0, wxALIGN_CENTER | wxALL, 10);
+
+        // Arrive at Emergency Button
+        wxButton *arriveButton = new wxButton(panel, wxID_ANY, _("Arrived at Emergency"));
+        arriveButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, &userRef, parent](wxCommandEvent &event)
+                           { userRef.ArriveAtEmergency(*parent); });
+
+        // Generate Hospital Route Button
+        wxButton *generateRouteButton = new wxButton(panel, wxID_ANY, _("Generate Hospital Route"));
+        generateRouteButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, &userRef, parent](wxCommandEvent &event)
+                                  { userRef.GenerateHospitalRoute(*parent); });
+
+        // Mark Emergency as Complete Button
+        wxButton *completeEmergencyButton = new wxButton(panel, wxID_ANY, _("Complete Emergency"));
+        completeEmergencyButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, &userRef, parent](wxCommandEvent &event)
+                                      { userRef.CompleteEmergency(*parent); });
+
+        sizer->Add(arriveButton, 0, wxALIGN_CENTER | wxALL, 10);
+        sizer->Add(generateRouteButton, 0, wxALIGN_CENTER | wxALL, 10);
+        sizer->Add(completeEmergencyButton, 0, wxALIGN_CENTER | wxALL, 10);
 
         map = new Map(panel, this);
         database->AddListener(map);
@@ -65,5 +90,34 @@ void CustomPanels::EmergencyResponderPanel(wxWindow *parent)
 
         // Refreshing the layout
         panel->Layout();
+
+        // Check for current emergency thread
+        thread([this, &userRef, parent]()
+               {
+               while (!terminateThread.load(memory_order_acquire))
+               {
+                   cout << "Thread Call!" << endl;
+
+                   // Route emergencies Asynchronously
+                   auto asyncFunc = [this, &userRef](wxWindow *p)
+                   {
+                       if (!terminateThread.load(memory_order_relaxed)) // Check termination flag before routing
+                       {
+                           userRef.CheckForCurrentEmergency(*p);
+                       }
+                   };
+
+                {
+                lock_guard<std::mutex> lock(mtx); // Lock the mutex before accessing shared data
+                if (terminateThread.load(std::memory_order_relaxed)) // Re-check termination flag inside the critical section
+                    break; // Exit loop if termination signal received
+                }
+
+                   async(launch::async, asyncFunc, parent).wait();
+
+                   this_thread::sleep_for(chrono::seconds(5));
+               }
+               cout << "Thread terminated!\n"; })
+            .detach();
     }
 }

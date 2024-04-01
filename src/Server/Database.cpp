@@ -83,7 +83,7 @@ void Database::UpdateRecord(const string &tableName, const vector<string> &colum
 
     for (size_t i = 0; i < columns.size(); i++)
     {
-        query << columns[i] << " = '" << values[i] << "'";
+        query << columns[i] << " = ?";
         if (i < columns.size() - 1)
         {
             query << ", ";
@@ -96,13 +96,19 @@ void Database::UpdateRecord(const string &tableName, const vector<string> &colum
     }
 
     SQLite::Statement updateStatement(*database, query.str());
+
+    // Bind values to the statement
+    for (size_t i = 0; i < values.size(); i++)
+    {
+        updateStatement.bind(i + 1, values[i]);
+    }
+
     updateStatement.exec();
 
     transaction.commit();
 
     NotifyListeners();
 };
-
 void Database::InsertRecord(const string &tableName, const vector<string> &values)
 {
     stringstream query;
@@ -212,7 +218,7 @@ vector<Ambulance> Database::GetAmbulances()
         pair<int, int> location = ConvertLocation((string)query.getColumn(1));
         bool status = query.getColumn(2).getInt() != 0;
         bool available = query.getColumn(3).getInt() != 0;
-        ambulances.push_back(Ambulance(query.getColumn(0), location, status, available));
+        ambulances.push_back(Ambulance(query.getColumn(0), location, status, available, query.getColumn(4).getInt()));
     }
 
     return ambulances;

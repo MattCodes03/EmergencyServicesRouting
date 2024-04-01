@@ -1,3 +1,4 @@
+#include <SQLiteCpp/SQLiteCpp.h>
 #include "Map.h"
 #include "../../MainFrame.h"
 #include <any>
@@ -101,7 +102,7 @@ void Map::SetupGraph()
 
             for (Ambulance ambulance : database->GetAmbulances())
             {
-                cout << any_cast<EmergencyResponder>(parentFrame->user).unitNumber;
+
                 if (ambulance.unitNumber == any_cast<EmergencyResponder>(parentFrame->user).unitNumber)
                 {
                     graph.AddNode(Node(ambulance.unitNumber, any_cast<Ambulance>(ambulance)));
@@ -117,7 +118,22 @@ void Map::SetupGraph()
                 {
                     graph.AddNode(Node(hospital.hospitalNumber, any_cast<Hospital>(hospital)));
 
-                    graph.AddEdge(hospital.hospitalNumber, activeAmbulance.unitNumber, graph.CalculateDistance(hospital.location, activeAmbulance.location));
+                    graph.AddEdge(activeAmbulance.unitNumber, hospital.hospitalNumber, graph.CalculateDistance(hospital.location, activeAmbulance.location));
+                }
+            }
+
+            // Plot the ambulances current emergency
+            for (Emergency emergency : database->GetEmergencies())
+            {
+                if (!emergency.complete)
+                {
+                    if (emergency.emergencyNumber == activeAmbulance.activeEmergency)
+                    {
+                        graph.AddNode(Node(emergency.emergencyNumber, any_cast<Emergency>(emergency)));
+
+                        graph.AddEdge(emergency.emergencyNumber, activeAmbulance.unitNumber, graph.CalculateDistance(activeAmbulance.location, emergency.location));
+                        AddEdge(emergency.location, activeAmbulance.location);
+                    }
                 }
             }
         }

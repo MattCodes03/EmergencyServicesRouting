@@ -28,7 +28,10 @@ public:
     void CallHandlerPanel(wxWindow *parent);
     void HospitalAdminPanel(wxWindow *parent);
 
-    void SetStopRoutingCallback(function<void()> callback);
+    void SetStopThreadCallback(std::function<void()> callback)
+    {
+        stopThreadCallback = callback;
+    }
 
     void InitialiseUser(const std::string &type, User &activeUser)
     {
@@ -36,13 +39,15 @@ public:
         {
             user = make_any<CallHandler>(activeUser.getUsername(), "Matthew", "McCann");
             // Set the stop routing callback
-            SetStopRoutingCallback([this]()
-                                   { StopRoutingThread(); });
+            SetStopThreadCallback([this]()
+                                  { StopRoutingThread(); });
         }
 
         if (type == "RESPONDER")
         {
             user = make_any<EmergencyResponder>(activeUser.getUsername());
+            SetStopThreadCallback([this]()
+                                  { StopRoutingThread(); });
         }
 
         if (type == "HOPSITAL")
@@ -54,17 +59,21 @@ public:
     // Function to stop the routing thread
     void StopRoutingThread()
     {
-        // Set keepRouting to false
-        terminateThread.store(true);
+        {
+            lock_guard<std::mutex> lock(mtx);                       // Lock the mutex before modifying shared data
+            terminateThread.store(true, std::memory_order_release); // Set the termination flag to true
+        }
+
+        cv.notify_all();
     }
 
     void Logout(wxCommandEvent &event)
     {
         // Stop the Emergency Routing Thread if user was logged in as Callhandler
-        if (stopRoutingCallback)
+        if (stopThreadCallback)
         {
             // Call the callback to stop the routing thread
-            stopRoutingCallback();
+            stopThreadCallback();
         }
 
         if (timer)
@@ -95,7 +104,7 @@ private:
     // Initialize a termination flag for the thread
     std::atomic<bool> terminateThread;
 
-    function<void()> stopRoutingCallback;
+    function<void()> stopThreadCallback;
 };
 
 #endif

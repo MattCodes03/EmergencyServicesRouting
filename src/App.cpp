@@ -60,7 +60,7 @@ bool App::OnInit()
     {
         if (login.ShowModal() == wxID_OK)
         {
-            if (user.login((string)login.getUsername(), (string)login.getPassword()))
+            if (user.Login((string)login.getUsername(), (string)login.getPassword()))
             {
                 loggedIn = true;
                 mainFrame->SetViewType(user.getRole());

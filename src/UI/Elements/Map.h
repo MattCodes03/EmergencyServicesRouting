@@ -39,17 +39,22 @@ public:
         edges.push_back({source, destination});
     }
 
+    void ClearEdges()
+    {
+        edges.clear();
+    }
+
     void SetMapType(string mapType)
     {
         this->mapType = mapType;
     }
 
+    using PairOfPairs = std::pair<std::pair<int, int>, std::pair<int, int>>;
+    vector<PairOfPairs> edges;
+
 private:
     string mapType;
     Graph graph;
-
-    using PairOfPairs = std::pair<std::pair<int, int>, std::pair<int, int>>;
-    vector<PairOfPairs> edges;
 
     wxDC *dc;
     wxWindow *parent;

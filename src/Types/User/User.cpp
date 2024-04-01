@@ -3,7 +3,7 @@
 
 using namespace std;
 
-bool User::login(const string &username, const string &password)
+bool User::Login(const string &username, const string &password)
 {
     // Get reference to Database
     std::unique_ptr<Database> db = std::make_unique<Database>();

@@ -49,6 +49,11 @@ public:
         nodes[node.GetID()] = node;
     };
 
+    void RemoveNode(int id)
+    {
+        nodes[id] = Node(id, 42);
+    }
+
     void ClearGraph()
     {
         this->nodes.clear();
