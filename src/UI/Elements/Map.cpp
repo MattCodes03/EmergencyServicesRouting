@@ -42,6 +42,7 @@ void Map::DrawNode(const NodeType &nodeRef)
         {
             brush = nodeRef.available ? *wxBLUE_BRUSH : *wxBLACK_BRUSH;
             pen = nodeRef.available ? wxPen(wxColor(0, 0, 255), 2) : wxPen(wxColor(128, 128, 128), 2);
+            x += 5;
         }
         else if constexpr (std::is_same_v<NodeType, Emergency>)
         {
