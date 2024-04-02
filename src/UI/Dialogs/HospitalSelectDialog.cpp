@@ -17,14 +17,14 @@ HospitalSelectDialog::HospitalSelectDialog(wxWindow *parent, wxWindowID id,
 {
     wxBoxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
 
-    PopulateHospitalList();
-
     // Initialize the hospitalChoice dropdown list
     hospitalChoice = new wxChoice(this, wxID_ANY);
     mainSizer->Add(hospitalChoice, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
 
+    PopulateHospitalList();
+
     // Hospital Pin Number Input
-    hospitalPinInput.initialize(this, _("Hospital Pin"));
+    hospitalPinInput.initialize(this, _("Pin"));
     mainSizer->Add(hospitalPinInput.inputSizer, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
 
     // Buttons

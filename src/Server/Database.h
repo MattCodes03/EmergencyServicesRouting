@@ -39,10 +39,10 @@ public:
     vector<Ambulance> GetAmbulances();
     vector<Hospital> GetHospitals();
 
+    pair<int, int> ConvertLocation(const string &location);
+
 private:
     void GeneratePsuedoData();
-
-    pair<int, int> ConvertLocation(const string &location);
     vector<DatabaseListener *> listeners;
 };
 

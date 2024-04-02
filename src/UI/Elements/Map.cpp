@@ -68,7 +68,7 @@ void Map::SetupGraph()
     {
         vector<Ambulance> ambulances;
 
-        for (Ambulance ambulance : database->GetAmbulances())
+        for (Ambulance &ambulance : database->GetAmbulances())
         {
             if (ambulance.status)
             {
@@ -77,7 +77,7 @@ void Map::SetupGraph()
             }
         };
 
-        for (Emergency emergency : database->GetEmergencies())
+        for (Emergency &emergency : database->GetEmergencies())
         {
             if (!emergency.complete && emergency.respondedTo)
             {
@@ -101,7 +101,7 @@ void Map::SetupGraph()
             // Get the active ambulance and add it to the graph
             Ambulance activeAmbulance;
 
-            for (Ambulance ambulance : database->GetAmbulances())
+            for (Ambulance &ambulance : database->GetAmbulances())
             {
 
                 if (ambulance.unitNumber == any_cast<EmergencyResponder>(parentFrame->user).unitNumber)
@@ -113,7 +113,7 @@ void Map::SetupGraph()
             };
 
             // Add all available hospitals to the graph and create an edge between each and the users active ambulance
-            for (Hospital hospital : database->GetHospitals())
+            for (Hospital &hospital : database->GetHospitals())
             {
                 if (hospital.status)
                 {
@@ -124,7 +124,7 @@ void Map::SetupGraph()
             }
 
             // Plot the ambulances current emergency
-            for (Emergency emergency : database->GetEmergencies())
+            for (Emergency &emergency : database->GetEmergencies())
             {
                 if (!emergency.complete)
                 {

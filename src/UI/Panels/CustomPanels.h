@@ -69,7 +69,8 @@ public:
 
     void Logout(wxCommandEvent &event)
     {
-        // Stop the Emergency Routing Thread if user was logged in as Callhandler
+
+                // Stop the Emergency Routing Thread if user was logged in as Callhandler
         if (stopThreadCallback)
         {
             // Call the callback to stop the routing thread

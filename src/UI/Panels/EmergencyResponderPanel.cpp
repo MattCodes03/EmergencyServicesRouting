@@ -22,18 +22,21 @@ void CustomPanels::EmergencyResponderPanel(wxWindow *parent)
         {
             if (ambulanceSelect.ShowModal() == wxID_OK)
             {
+                bool validUnit = false;
                 for (const Ambulance &ambulance : ambulances)
                 {
                     if (ambulance.unitNumber == ambulanceSelect.getUnitNumber())
                     {
                         userRef.unitNumber = ambulanceSelect.getUnitNumber();
+                        validUnit = true;
                         break;
                     }
                 }
-            }
-            else
-            {
-                wxMessageBox("Not a valid ambulance number!", "Unit Assignment Failed", wxOK | wxICON_ERROR, parentFrame);
+
+                if (!validUnit)
+                {
+                    wxMessageBox("Not a valid ambulance number!", "Unit Assignment Failed", wxOK | wxICON_ERROR, parentFrame);
+                }
             }
         }
 

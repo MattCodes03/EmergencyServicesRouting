@@ -22,7 +22,7 @@ public:
 
 private:
     int hospitalNumber = 0;
-    int hospitalPin;
+    int hospitalPin = 0;
     wxChoice *hospitalChoice;
     UserInput hospitalPinInput;
 
