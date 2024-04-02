@@ -20,8 +20,16 @@ public:
 
     ~CustomPanels() // Destructor to clean up resources
     {
-        delete map;      // Delete the map object
-        delete database; // Delete the database object
+        if (map != nullptr)
+        {
+            delete map;    // Delete the map object if it's not null
+            map = nullptr; // Set the pointer to null after deletion
+        }
+        if (database != nullptr)
+        {
+            delete database;    // Delete the database object if it's not null
+            database = nullptr; // Set the pointer to null after deletion
+        }
     }
 
     void EmergencyResponderPanel(wxWindow *parent);
@@ -70,7 +78,7 @@ public:
     void Logout(wxCommandEvent &event)
     {
 
-                // Stop the Emergency Routing Thread if user was logged in as Callhandler
+        // Stop the Emergency Routing Thread if user was logged in as Callhandler
         if (stopThreadCallback)
         {
             // Call the callback to stop the routing thread
