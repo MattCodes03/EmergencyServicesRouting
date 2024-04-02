@@ -43,7 +43,7 @@ void Database::InitializeDatabase()
     // Ambulance Table
     database->exec("CREATE TABLE ambulance (unitNumber INTEGER PRIMARY KEY, location VARCHAR, status INTEGER, available INTEGER, active_emergency INTEGER, CONSTRAINT fk_active_emergency FOREIGN KEY(active_emergency) REFERENCES emergencies(emergencyID))");
 
-    database->exec("CREATE TABLE hospital (hospitalNumber INTEGER PRIMARY KEY, location VARCHAR, status INTEGER)");
+    database->exec("CREATE TABLE hospital (hospitalNumber INTEGER PRIMARY KEY, name VARCHAR, location VARCHAR, status INTEGER, pin INTEGER)");
 
     // Commit Transaction
     transaction.commit();
@@ -147,9 +147,9 @@ void Database::GeneratePsuedoData()
     database->exec("INSERT INTO ambulance VALUES (9, \"(100, 80)\", 1, 1, 0)");
 
     // Fake Hospitals
-    database->exec("INSERT INTO hospital VALUES (15, \"(60, 450)\", 1)");
-    database->exec("INSERT INTO hospital VALUES (16, \"(150, 260)\", 1)");
-    database->exec("INSERT INTO hospital VALUES (17, \"(50, 260)\", 0)");
+    database->exec("INSERT INTO hospital VALUES (15, \"Univeristy Hospital Crosshouse\", \"(60, 300)\", 1, 1234)");
+    database->exec("INSERT INTO hospital VALUES (16, \"Glasgow Royal Infirmary\", \"(150, 260)\", 1, 1234)");
+    database->exec("INSERT INTO hospital VALUES (17, \"Queen Elizabeth University Hospital\", \"(50, 260)\", 0, 1234)");
 
     // Commit Transaction
     psuedoDataTransaction.commit();
@@ -230,9 +230,9 @@ vector<Hospital> Database::GetHospitals()
     SQLite::Statement query(*database, "SELECT * FROM hospital");
     while (query.executeStep())
     {
-        pair<int, int> location = ConvertLocation((string)query.getColumn(1));
-        bool status = query.getColumn(2).getInt() != 0;
-        hospitals.push_back(Hospital(query.getColumn(0), location, status));
+        pair<int, int> location = ConvertLocation((string)query.getColumn(2));
+        bool status = query.getColumn(3).getInt() != 0;
+        hospitals.push_back(Hospital(query.getColumn(0), (string)query.getColumn(1), location, status));
     }
 
     return hospitals;

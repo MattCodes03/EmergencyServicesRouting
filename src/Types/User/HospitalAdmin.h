@@ -8,9 +8,10 @@ class HospitalAdmin : public User
 public:
     HospitalAdmin(const string &username);
 
-    void updateHospitalStatus();
+    void UpdateHospitalStatus();
 
-    // Hospital hospital - Implement this once Hospital Class has been created.
+    int hospitalNumber;
+    Hospital activeHospital;
 };
 
 #endif

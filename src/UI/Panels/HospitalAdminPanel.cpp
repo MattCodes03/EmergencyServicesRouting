@@ -1,27 +1,50 @@
 #include "CustomPanels.h"
+#include "../Dialogs/HospitalSelectDialog.h"
 
 void CustomPanels::HospitalAdminPanel(wxWindow *parent)
 {
-    wxFont titleFont(wxFontInfo(wxSize(0, 36)).Bold());
-    wxFont mainFont(wxFontInfo(wxSize(0, 24)));
+    auto &userRef = std::any_cast<HospitalAdmin &>(user);
 
-    // Creating a panel with explicit size and position
-    panel = new wxPanel(parent, wxID_ANY, wxPoint(0, 0), wxSize(800, 600));
+    MainFrame *parentFrame = dynamic_cast<MainFrame *>(parent);
+    if (parentFrame)
+    {
 
-    panel->SetFont(mainFont);
+        HospitalSelectDialog hospitalSelect(parentFrame, wxID_ANY, _("Hospital Select"));
+        hospitalSelect.Center();
 
-    // Adding a sizer to manage layout
-    wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+        while (userRef.hospitalNumber <= 0)
+        {
+            if (hospitalSelect.ShowModal() == wxID_OK)
+            {
+                // Check the pin against the hospital number before allowing log it.
+            }
+            else
+            {
+                wxMessageBox("Hospital Login Details Incorrect!", "Hospital Selection Failed", wxOK | wxICON_ERROR, parentFrame);
+            }
+        }
 
-    wxStaticText *text = new wxStaticText(panel, wxID_ANY, "Hospital Admin View");
-    text->SetFont(mainFont);
+        wxFont titleFont(wxFontInfo(wxSize(0, 36)).Bold());
+        wxFont mainFont(wxFontInfo(wxSize(0, 24)));
 
-    // Adding the text to the sizer
-    sizer->Add(text, 0, wxALIGN_CENTER | wxALL, 10);
+        // Creating a panel with explicit size and position
+        panel = new wxPanel(parent, wxID_ANY, wxPoint(0, 0), wxSize(800, 600));
 
-    // Setting the sizer for the panel
-    panel->SetSizer(sizer);
+        panel->SetFont(mainFont);
 
-    // Refreshing the layout
-    panel->Layout();
+        // Adding a sizer to manage layout
+        wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+
+        wxStaticText *text = new wxStaticText(panel, wxID_ANY, "Hospital Admin View");
+        text->SetFont(mainFont);
+
+        // Adding the text to the sizer
+        sizer->Add(text, 0, wxALIGN_CENTER | wxALL, 10);
+
+        // Setting the sizer for the panel
+        panel->SetSizer(sizer);
+
+        // Refreshing the layout
+        panel->Layout();
+    }
 }

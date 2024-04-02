@@ -88,7 +88,7 @@ void EmergencyResponder::CompleteEmergency(wxWindow &parent)
 
                         while (query.executeStep())
                         {
-                            parentFrame->customPanels->GetDatabase().UpdateRecord("ambulance", {"location", "available", "active_emergency"}, {query.getColumn(1), "1", "0"}, {"unitNumber = '" + to_string(unitNumber) + "'"});
+                            parentFrame->customPanels->GetDatabase().UpdateRecord("ambulance", {"location", "available", "active_emergency"}, {query.getColumn(2), "1", "0"}, {"unitNumber = '" + to_string(unitNumber) + "'"});
                         }
 
                         parentFrame->customPanels->GetMap().ClearEdges();

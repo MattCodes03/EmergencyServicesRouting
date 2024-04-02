@@ -1,5 +1,5 @@
-#ifndef LOGINDIALOG_H
-#define LOGINDIALOG_H
+#ifndef AMBULANCESELECTDIALOG_H
+#define AMBULANCESELECTDIALOG_H
 
 #include <wx/wx.h>
 #include "../Elements/UserInput.h"
