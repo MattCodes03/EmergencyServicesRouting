@@ -50,7 +50,7 @@ public:
                                   { StopRoutingThread(); });
         }
 
-        if (type == "HOPSITAL")
+        if (type == "HOSPITAL")
         {
             user = make_any<HospitalAdmin>(activeUser.getUsername());
         }

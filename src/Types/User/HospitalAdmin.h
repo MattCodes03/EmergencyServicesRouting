@@ -10,7 +10,7 @@ public:
 
     void UpdateHospitalStatus();
 
-    int hospitalNumber;
+    int hospitalNumber = -1;
     Hospital activeHospital;
 };
 
