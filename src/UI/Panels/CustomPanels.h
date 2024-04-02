@@ -102,7 +102,7 @@ public:
 
 private:
     wxPanel *panel;
-    Map *map;
+    Map *map = nullptr;
     Database *database = new Database();
     wxTimer *timer = nullptr;
 
