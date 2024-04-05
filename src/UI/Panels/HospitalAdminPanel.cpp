@@ -70,6 +70,23 @@ void CustomPanels::HospitalAdminPanel(wxWindow *parent)
         // Adding the text to the sizer
         sizer->Add(text, 0, wxALIGN_CENTER | wxALL, 10);
 
+        bool acceptingPatients = (userRef.activeHospital.status == 1);
+
+        // Determine the status text based on the boolean value
+        string statusText = acceptingPatients ? "Accepting Patients" : "Not Accepting Patients";
+
+        // Create and display the wxStaticText with the hospital name and status text
+        wxString labelText = wxString::Format("Status: %s", statusText);
+        wxStaticText *statusTextObject = new wxStaticText(panel, wxID_ANY, labelText);
+        text->SetFont(mainFont);
+        sizer->Add(statusTextObject, 0, wxALIGN_CENTER | wxALL, 10);
+
+        wxButton *changeStatusButton = new wxButton(panel, wxID_ANY, _("Update Hospital Status"));
+        changeStatusButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, &userRef, parent](wxCommandEvent &event)
+                                 { userRef.UpdateHospitalStatus(*parent); });
+
+        sizer->Add(changeStatusButton, 0, wxALIGN_CENTER | wxALL, 10);
+
         // Setting the sizer for the panel
         panel->SetSizer(sizer);
 

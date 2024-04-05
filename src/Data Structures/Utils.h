@@ -31,24 +31,29 @@ T GetRandom(const vector<T> &items)
 template <typename T>
 size_t Pivot(vector<T> &items, size_t low, size_t high)
 {
-    T pivot = items[high]; // Set Pivot value to last element in items
+    // Randomly choose pivot index within the range [low, high]
+    size_t pivotIndex = low + rand() % (high - low + 1);
+
+    // Swap pivot element with the last element
+    swap(items[pivotIndex], items[high]);
+
+    T pivot = items[high];
     size_t i = low - 1;
 
-    // Loop through items and sort items around the pivot value
-    for (int j = low; j < high; j++)
+    // Partition around the pivot
+    for (size_t j = low; j < high; ++j)
     {
         if (items[j] < pivot)
         {
-            i++;
+            ++i;
             swap(items[i], items[j]);
         }
     }
 
     swap(items[i + 1], items[high]);
 
-    // Return the Pivot Index once its in its sorted position
-    return i + 1;
-};
+    return i + 1; // Return the index of the pivot
+}
 
 template <typename T>
 void QuickSortRecursive(vector<T> &items, size_t low, size_t high)

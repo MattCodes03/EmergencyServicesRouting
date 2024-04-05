@@ -99,7 +99,6 @@ void EmergencyResponder::CompleteEmergency(wxWindow &parent)
                     }
 
                     parentFrame->customPanels->GetDatabase().UpdateRecord("emergencies", {"complete"}, {"1"}, {"emergencyID = '" + to_string(currentEmergency) + "'"});
-                    parentFrame->customPanels->GetMap().GetGraph().RemoveNode(currentEmergency);
                     currentEmergency = -1;
                     hospitalRoute = false;
                 }

@@ -10,6 +10,20 @@ void Map::OnPaint(wxPaintEvent &event)
     if (dc)
     {
 
+        DrawBackground();
+
+        SetupGraph();
+        DrawGraph();
+    }
+};
+
+// Draw the background image
+void Map::DrawBackground()
+{
+    wxPaintDC paintDC(this); // Create a wxPaintDC object for this panel
+    wxDC *dc = &paintDC;
+    if (dc)
+    {
         // Load the PNG image
         wxBitmap pngBitmap("Assets/map.png", wxBITMAP_TYPE_PNG);
 
@@ -21,11 +35,8 @@ void Map::OnPaint(wxPaintEvent &event)
 
         // Draw the PNG image on the DC
         dc->DrawBitmap(pngBitmap, 0, 0, true);
-
-        SetupGraph();
-        DrawGraph();
     }
-};
+}
 
 template <typename NodeType>
 void Map::DrawNode(const NodeType &nodeRef)
@@ -63,72 +74,74 @@ void Map::DrawNode(const NodeType &nodeRef)
 
 void Map::SetupGraph()
 {
-    unique_ptr<Database> database = make_unique<Database>();
-    if (mapType == "HANDLER")
+    try
     {
-        vector<Ambulance> ambulances;
 
-        for (Ambulance &ambulance : database->GetAmbulances())
-        {
-            if (ambulance.status)
-            {
-                graph.AddNode(Node(ambulance.unitNumber, any_cast<Ambulance>(ambulance)));
-                ambulances.push_back(ambulance);
-            }
-        };
+        graph.ClearGraph();
 
-        for (Emergency &emergency : database->GetEmergencies())
+        unique_ptr<Database> database = make_unique<Database>();
+
+        if (mapType == "HANDLER")
         {
-            if (!emergency.complete && emergency.respondedTo)
+            vector<Ambulance> ambulances;
+
+            for (Ambulance &ambulance : database->GetAmbulances())
             {
-                graph.AddNode(Node(emergency.emergencyNumber, any_cast<Emergency>(emergency)));
-                for (Ambulance ambulance : ambulances)
+                if (ambulance.status)
                 {
-                    if (ambulance.available)
+                    graph.AddNode(Node(ambulance.unitNumber, any_cast<Ambulance>(ambulance)));
+                    ambulances.push_back(ambulance);
+                }
+            };
+
+            for (Emergency &emergency : database->GetEmergencies())
+            {
+                if (!emergency.complete && emergency.respondedTo)
+                {
+                    graph.AddNode(Node(emergency.emergencyNumber, any_cast<Emergency>(emergency)));
+                    for (Ambulance ambulance : ambulances)
                     {
-                        graph.AddEdge(emergency.emergencyNumber, ambulance.unitNumber, graph.CalculateDistance(emergency.location, ambulance.location));
+                        if (ambulance.available)
+                        {
+                            graph.AddEdge(emergency.emergencyNumber, ambulance.unitNumber, graph.CalculateDistance(emergency.location, ambulance.location));
+                        }
                     }
                 }
             }
         }
-    }
 
-    if (mapType == "AMBULANCE")
-    {
-        CustomPanels *parentFrame = dynamic_cast<CustomPanels *>(parentPanel);
-        if (parentFrame)
+        if (mapType == "AMBULANCE")
         {
-            // Get the active ambulance and add it to the graph
-            Ambulance activeAmbulance;
-
-            for (Ambulance &ambulance : database->GetAmbulances())
+            CustomPanels *parentFrame = dynamic_cast<CustomPanels *>(parentPanel);
+            if (parentFrame)
             {
+                // Get the active ambulance and add it to the graph
+                Ambulance activeAmbulance;
 
-                if (ambulance.unitNumber == any_cast<EmergencyResponder>(parentFrame->user).unitNumber)
+                for (Ambulance &ambulance : database->GetAmbulances())
                 {
-                    graph.AddNode(Node(ambulance.unitNumber, any_cast<Ambulance>(ambulance)));
-                    activeAmbulance = ambulance;
-                    break;
+                    if (ambulance.unitNumber == any_cast<EmergencyResponder>(parentFrame->user).unitNumber)
+                    {
+                        graph.AddNode(Node(ambulance.unitNumber, any_cast<Ambulance>(ambulance)));
+                        activeAmbulance = ambulance;
+                        break;
+                    }
+                };
+
+                // Add all available hospitals to the graph and create an edge between each and the user's active ambulance
+                for (Hospital &hospital : database->GetHospitals())
+                {
+                    if (hospital.status)
+                    {
+                        graph.AddNode(Node(hospital.hospitalNumber, any_cast<Hospital>(hospital)));
+                        graph.AddEdge(activeAmbulance.unitNumber, hospital.hospitalNumber, graph.CalculateDistance(hospital.location, activeAmbulance.location));
+                    }
                 }
-            };
 
-            // Add all available hospitals to the graph and create an edge between each and the users active ambulance
-            for (Hospital &hospital : database->GetHospitals())
-            {
-                if (hospital.status)
+                // Plot the ambulance's current emergency
+                for (Emergency &emergency : database->GetEmergencies())
                 {
-                    graph.AddNode(Node(hospital.hospitalNumber, any_cast<Hospital>(hospital)));
-
-                    graph.AddEdge(activeAmbulance.unitNumber, hospital.hospitalNumber, graph.CalculateDistance(hospital.location, activeAmbulance.location));
-                }
-            }
-
-            // Plot the ambulances current emergency
-            for (Emergency &emergency : database->GetEmergencies())
-            {
-                if (!emergency.complete)
-                {
-                    if (emergency.emergencyNumber == activeAmbulance.activeEmergency)
+                    if (!emergency.complete && emergency.emergencyNumber == activeAmbulance.activeEmergency)
                     {
                         graph.AddNode(Node(emergency.emergencyNumber, any_cast<Emergency>(emergency)));
 
@@ -139,10 +152,16 @@ void Map::SetupGraph()
             }
         }
     }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Error setting up graph: " << e.what() << '\n';
+    }
 }
 
 void Map::DrawGraph()
 {
+
+    QuickSortEdges(edges, 0, edges.size() - 1);
 
     for (auto &node : graph.GetNodes())
     {
@@ -170,5 +189,6 @@ void Map::DrawGraph()
 
 void Map::OnDatabaseChange()
 {
+    lock_guard<mutex> lock(graph.GetMutex());
     Refresh();
 };

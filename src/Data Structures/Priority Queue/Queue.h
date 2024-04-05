@@ -22,7 +22,21 @@ public:
             // Push onto queue
             queue.push_back(item);
 
-            QuickSort(queue);
+            // Maintain max-heap property by heapifying up
+            int index = queue.size() - 1; // Index of the newly inserted element
+            while (index > 0)
+            {
+                int parentIndex = (index - 1) / 2; // Calculate parent index
+                if (compareItems(queue[index], queue[parentIndex]))
+                {                                           // If child is greater than parent
+                    swap(queue[index], queue[parentIndex]); // Swap child with parent
+                    index = parentIndex;                    // Update index to parent
+                }
+                else
+                {
+                    break; // Max-heap property satisfied
+                }
+            }
         }
         catch (const std::exception &e)
         {
@@ -70,9 +84,30 @@ public:
         return *queueMutex;
     }
 
+    void SetQueueType(string type)
+    {
+        this->type = type;
+    }
+
 private:
     vector<T> queue{};
     shared_ptr<mutex> queueMutex = make_shared<mutex>();
+
+    // Queue type
+    string type = "MIN";
+
+    // Comparison function for items of type T
+    bool compareItems(const T &a, const T &b)
+    {
+        if (type == "MAX")
+        {
+            return a > b;
+        }
+        else
+        {
+            return a < b;
+        }
+    }
 };
 
 #endif

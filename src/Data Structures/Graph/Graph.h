@@ -7,6 +7,8 @@
 #include "../../Types/Nodes/Emergency.h"
 #include <iostream>
 #include <cmath>
+#include <mutex>
+#include <memory>
 
 using namespace std;
 
@@ -56,8 +58,10 @@ public:
 
     void ClearGraph()
     {
-        this->nodes.clear();
-        this->adjacencyList.clear();
+        for (int i = 0; i < nodes.size(); ++i)
+        {
+            nodes[i] = Node(i, 42);
+        }
     };
 
     // Euclidean Distance Formula
@@ -92,23 +96,24 @@ public:
 
         distance[source] = 0;
 
-        while (true)
+        // Use the custom priority queue
+        Queue<pair<int, int>> priorityQueue;
+        priorityQueue.SetQueueType("MIN"); // Set the queue type to min-heap
+
+        // Enqueue the source node
+        priorityQueue.EnQueue({0, source}); // {distance, node}
+
+        while (!priorityQueue.GetQueue().empty())
         {
-            int minDistanceIndex = -1;                    // Index of Node with the lowest distance to source
-            int minDistance = numeric_limits<int>::max(); // Lowest distance value found so far, initialize to maximum value
+            // Extract the node with the minimum distance
+            auto minDistanceNode = priorityQueue.GetQueue().front();
+            priorityQueue.DeQueue();
+            int minDistance = minDistanceNode.first;
+            int minDistanceIndex = minDistanceNode.second;
 
-            // Find the node with the minimum distance among unvisited nodes
-            for (int i = 0; i < size; i++)
-            {
-                if (!visited[i] && distance[i] < minDistance)
-                {
-                    minDistance = distance[i];
-                    minDistanceIndex = i;
-                }
-            }
-
-            if (minDistanceIndex == -1) // If no unvisited nodes found
-                break;
+            // If the node is already visited, continue to the next node
+            if (visited[minDistanceIndex])
+                continue;
 
             visited[minDistanceIndex] = true; // Mark the current node as visited
 
@@ -117,10 +122,11 @@ public:
             {
                 int nodeID = neighbor.first;
                 int weight = neighbor.second;
-                if (!visited[nodeID] && distance[minDistanceIndex] + weight < distance[nodeID])
+                if (!visited[nodeID] && minDistance + weight < distance[nodeID])
                 {
-                    distance[nodeID] = distance[minDistanceIndex] + weight;
+                    distance[nodeID] = minDistance + weight;
                     parent[nodeID] = minDistanceIndex;
+                    priorityQueue.EnQueue({distance[nodeID], nodeID}); // Enqueue the updated distance
                 }
             }
         }
@@ -150,15 +156,27 @@ public:
 
     vector<Node> GetNodes() const
     {
+
         return this->nodes;
     };
-    vector<vector<pair<int, int>>> GetAdjacencyList() const { return this->adjacencyList; };
+    vector<vector<pair<int, int>>> GetAdjacencyList() const
+    {
+
+        return this->adjacencyList;
+    };
+
+    mutex &GetMutex()
+    {
+        return *graphMutex;
+    }
 
     Queue<Emergency> queue;
 
 private:
     vector<vector<pair<int, int>>> adjacencyList;
     vector<Node> nodes;
+
+    shared_ptr<mutex> graphMutex = make_shared<mutex>();
 };
 
 #endif

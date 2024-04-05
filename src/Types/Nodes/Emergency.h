@@ -24,6 +24,11 @@ public:
         return this->priority < other.priority;
     }
 
+    // Overload the > operator for this class to compare priorities, this is used when queueing emergencies
+    bool operator>(const Emergency &other) const{
+        return this->priority > other.priority;
+    }
+
     // Overload << operator to define string representation
     friend std::ostream &operator<<(std::ostream &os, const Emergency &obj)
     {

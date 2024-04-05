@@ -53,6 +53,8 @@ void CallHandler::PrioritiseEmergency(wxCommandEvent &event, wxWindow &parent, E
         {
 
             emergency.priority = emergencyPriority;
+            // Set Queue to a Max-Heap
+            parentFrame->customPanels->GetMap().GetGraph().queue.SetQueueType("MAX");
             parentFrame->customPanels->GetMap().GetGraph().queue.EnQueue(emergency);
         }
     }

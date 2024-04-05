@@ -8,6 +8,7 @@
 #include "../../Server/Database.h"
 #include <any>
 #include <typeinfo>
+#include <random>
 
 class Map : public wxPanel, public DatabaseListener
 {
@@ -18,6 +19,8 @@ public:
     void OnDatabaseChange() override;
 
     void OnPaint(wxPaintEvent &event);
+
+    void DrawBackground();
 
     void SetupGraph();
 
@@ -49,7 +52,12 @@ public:
         this->mapType = mapType;
     }
 
-    using PairOfPairs = std::pair<std::pair<int, int>, std::pair<int, int>>;
+    void ClearGraph()
+    {
+        graph.ClearGraph();
+    }
+
+    using PairOfPairs = pair<pair<int, int>, pair<int, int>>;
     vector<PairOfPairs> edges;
 
 private:
@@ -64,6 +72,40 @@ private:
 
     template <typename NodeType>
     void DrawNode(const NodeType &nodeRef);
+
+    // QuickSort function to sort edges based on source node coordinates
+    void QuickSortEdges(std::vector<PairOfPairs> &edges, int low, int high)
+    {
+        if (low < high)
+        {
+            int pivot = partition(edges, low, high);
+            QuickSortEdges(edges, low, pivot - 1);
+            QuickSortEdges(edges, pivot + 1, high);
+        }
+    }
+
+    // Function to partition the array and return the index of the pivot element
+int partition(vector<PairOfPairs> &edges, int low, int high) {
+    // Randomly choose pivot index within the range [low, high]
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<int> distribution(low, high);
+    int pivotIndex = distribution(gen);
+
+    // Swap pivot element with the last element
+    swap(edges[pivotIndex], edges[high]);
+    PairOfPairs pivot = edges[high];
+
+    int i = low - 1;
+    for (int j = low; j < high; ++j) {
+        if (edges[j].first.first < pivot.first.first) {
+            ++i;
+            swap(edges[i], edges[j]);
+        }
+    }
+    swap(edges[i + 1], edges[high]);
+    return i + 1;
+}
 
     DECLARE_EVENT_TABLE();
 };
