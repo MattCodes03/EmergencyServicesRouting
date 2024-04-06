@@ -1,0 +1,16 @@
+1. Login with Correct Credentials
+2. Login with InCorrect Credentials
+3. Logout
+
+Call Handler Tests
+4. Accept Emergency and Prioritise Emergency with available ambulances
+5. ^^ With no Ambulances
+
+Emergency Responder
+6.  Attempt to click all funcitons without arriving at emergency first
+7. Go through all options i.e Arrive at Emergency, Generate Hospital Route, Complete Emergency 
+8. Complete Emergency without Hospital Route
+
+Hospital Admin
+9. Login with incorrect hospital pin
+10. Update Hospital Status

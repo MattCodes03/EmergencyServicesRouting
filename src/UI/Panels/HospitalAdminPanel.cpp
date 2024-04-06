@@ -94,9 +94,14 @@ void CustomPanels::HospitalAdminPanel(wxWindow *parent)
         sizer->Add(statusTextObject, 0, wxALIGN_CENTER | wxALL, 10);
 
         wxButton *changeStatusButton = new wxButton(panel, wxID_ANY, _("Update Hospital Status"));
-        changeStatusButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, &userRef, parent](wxCommandEvent &event)
+        changeStatusButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, &userRef, parent, statusTextObject](wxCommandEvent &event)
                                  { userRef.UpdateHospitalStatus(*parent);
-                                  panel->Layout(); });
+                                  // Update status text after hospital status has changed
+                             bool acceptingPatients = (userRef.activeHospital.status == 1);
+                             string updatedStatusText = acceptingPatients ? "Accepting Patients" : "Not Accepting Patients";
+                             wxString updatedLabelText = wxString::Format("Status: %s", updatedStatusText);
+                             statusTextObject->SetLabelText(updatedLabelText);
+                             panel->Layout(); });
 
         sizer->Add(changeStatusButton, 0, wxALIGN_CENTER | wxALL, 10);
 

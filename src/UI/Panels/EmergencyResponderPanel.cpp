@@ -61,7 +61,10 @@ void CustomPanels::EmergencyResponderPanel(wxWindow *parent)
         panel->SetFont(mainFont);
 
         // Adding a sizer to manage layout
-        wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
+        wxBoxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
+
+        // Creating a horizontal sizer for the top row
+        wxBoxSizer *topRowSizer = new wxBoxSizer(wxHORIZONTAL);
 
         wxString unitText = wxString::Format("Unit #%d", userRef.unitNumber);
         wxStaticText *text = new wxStaticText(panel, wxID_ANY, unitText);
@@ -71,10 +74,17 @@ void CustomPanels::EmergencyResponderPanel(wxWindow *parent)
         logoutButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, &userRef](wxCommandEvent &event)
                            { Logout(event); });
 
-        sizer->Add(logoutButton, 0, wxALIGN_RIGHT, 10);
+        // Adding text and logout button to the top row sizer
+        topRowSizer->Add(text, 0, wxALIGN_CENTER | wxALL, 10);
+        // Adding a spacer to push the logout button to the right
+        topRowSizer->AddStretchSpacer(1);
+        topRowSizer->Add(logoutButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, 10);
 
-        // Adding the text to the sizer
-        sizer->Add(text, 0, wxALIGN_CENTER | wxALL, 10);
+        // Adding the top row sizer to the main sizer
+        mainSizer->Add(topRowSizer, 0, wxEXPAND | wxALL, 10);
+
+        // Creating a vertical sizer for the bottom row
+        wxBoxSizer *bottomRowSizer = new wxBoxSizer(wxHORIZONTAL);
 
         // Arrive at Emergency Button
         wxButton *arriveButton = new wxButton(panel, wxID_ANY, _("Arrived at Emergency"));
@@ -91,17 +101,21 @@ void CustomPanels::EmergencyResponderPanel(wxWindow *parent)
         completeEmergencyButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, &userRef, parent](wxCommandEvent &event)
                                       { userRef.CompleteEmergency(*parent); });
 
-        sizer->Add(arriveButton, 0, wxALIGN_CENTER | wxALL, 10);
-        sizer->Add(generateRouteButton, 0, wxALIGN_CENTER | wxALL, 10);
-        sizer->Add(completeEmergencyButton, 0, wxALIGN_CENTER | wxALL, 10);
+        // Adding buttons to the bottom row sizer
+        bottomRowSizer->Add(arriveButton, 0, wxALIGN_CENTER | wxALL, 10);
+        bottomRowSizer->Add(generateRouteButton, 0, wxALIGN_CENTER | wxALL, 10);
+        bottomRowSizer->Add(completeEmergencyButton, 0, wxALIGN_CENTER | wxALL, 10);
+
+        // Adding the bottom row sizer to the main sizer
+        mainSizer->Add(bottomRowSizer, 0, wxEXPAND | wxALL, 10);
 
         map = new Map(panel, this);
         database->AddListener(map);
         map->SetMapType("AMBULANCE");
-        sizer->Add(map, 1, wxEXPAND);
+        mainSizer->Add(map, 1, wxEXPAND);
 
         // Setting the sizer for the panel
-        panel->SetSizer(sizer);
+        panel->SetSizer(mainSizer);
 
         // Refreshing the layout
         panel->Layout();
