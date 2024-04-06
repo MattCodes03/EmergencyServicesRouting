@@ -1,3 +1,15 @@
+/*
+Copyright (c) 2024, Matthew McCann
+All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to no conditions.
+*/
+
 #ifndef CUSTOMPANELS_H
 #define CUSTOMPANELS_H
 
@@ -45,7 +57,7 @@ public:
     {
         if (type == "HANDLER")
         {
-            user = make_any<CallHandler>(activeUser.getUsername(), "Matthew", "McCann");
+            user = std::make_any<CallHandler>(activeUser.getUsername(), "Matthew", "McCann");
             // Set the stop routing callback
             SetStopThreadCallback([this]()
                                   { StopRoutingThread(); });
@@ -53,14 +65,14 @@ public:
 
         if (type == "RESPONDER")
         {
-            user = make_any<EmergencyResponder>(activeUser.getUsername());
+            user = std::make_any<EmergencyResponder>(activeUser.getUsername());
             SetStopThreadCallback([this]()
                                   { StopRoutingThread(); });
         }
 
         if (type == "HOSPITAL")
         {
-            user = make_any<HospitalAdmin>(activeUser.getUsername());
+            user = std::make_any<HospitalAdmin>(activeUser.getUsername());
         }
     }
 
@@ -68,7 +80,7 @@ public:
     void StopRoutingThread()
     {
         {
-            lock_guard<std::mutex> lock(mtx);                       // Lock the mutex before modifying shared data
+            std::lock_guard<std::mutex> lock(mtx);                  // Lock the mutex before modifying shared data
             terminateThread.store(true, std::memory_order_release); // Set the termination flag to true
         }
 
@@ -94,7 +106,7 @@ public:
         App::GetInstance().Restart();
     }
 
-    any user;
+    std::any user;
 
     Map &GetMap() { return *map; };
 
@@ -107,8 +119,8 @@ private:
     wxTimer *timer = nullptr;
 
     // Declare a mutex and condition variable for synchronization
-    mutex mtx;
-    condition_variable cv;
+    std::mutex mtx;
+    std::condition_variable cv;
 
     // Initialize a termination flag for the thread
     std::atomic<bool> terminateThread;

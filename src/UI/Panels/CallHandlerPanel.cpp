@@ -1,3 +1,15 @@
+/*
+Copyright (c) 2024, Matthew McCann
+All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to no conditions.
+*/
+
 #include "CustomPanels.h"
 #include <any>
 #include <thread>
@@ -12,7 +24,7 @@ END_EVENT_TABLE()
 void CustomPanels::CallHandlerPanel(wxWindow *parent)
 {
 
-    auto userRef = any_cast<CallHandler>(user);
+    auto userRef = std::any_cast<CallHandler>(user);
 
     wxFont titleFont(wxFontInfo(wxSize(0, 36)).Bold());
     wxFont mainFont(wxFontInfo(wxSize(0, 24)));
@@ -72,9 +84,9 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
     // Route Emergency Thread
     thread([this, userRef, parent]()
            {
-               while (!terminateThread.load(memory_order_acquire))
+               while (!terminateThread.load(std::memory_order_acquire))
                {
-                   cout << "Thread Call!" << endl;
+                   std::cout << "Thread Call!" << endl;
 
                    // Route emergencies Asynchronously
                    auto asyncFunc = [this, &userRef](wxWindow *p)
@@ -86,15 +98,15 @@ void CustomPanels::CallHandlerPanel(wxWindow *parent)
                    };
 
                 {
-                lock_guard<std::mutex> lock(mtx); // Lock the mutex before accessing shared data
+                std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before accessing shared data
                 if (terminateThread.load(std::memory_order_relaxed)) // Re-check termination flag inside the critical section
                     break; // Exit loop if termination signal received
                 }
 
-                   async(launch::async, asyncFunc, parent).wait();
+                   std::async(launch::async, asyncFunc, parent).wait();
 
                    this_thread::sleep_for(chrono::seconds(5));
                }
-               cout << "Routing thread terminated!\n"; })
+               std::cout << "Routing thread terminated!\n"; })
         .detach();
 }

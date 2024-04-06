@@ -1,3 +1,15 @@
+/*
+Copyright (c) 2024, Matthew McCann
+All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to no conditions.
+*/
+
 #ifndef QUEUE_H
 #define QUEUE_H
 
@@ -6,8 +18,6 @@
 #include <iostream>
 #include <memory>
 #include <mutex>
-
-using namespace std;
 
 template <typename T>
 class Queue
@@ -22,19 +32,19 @@ public:
             // Push onto queue
             queue.push_back(item);
 
-            // Maintain max-heap property by heapifying up
+            // Maintain heap property by heapifying up or down depending on heap type
             int index = queue.size() - 1; // Index of the newly inserted element
             while (index > 0)
             {
                 int parentIndex = (index - 1) / 2; // Calculate parent index
                 if (compareItems(queue[index], queue[parentIndex]))
-                {                                           // If child is greater than parent
+                {
                     swap(queue[index], queue[parentIndex]); // Swap child with parent
                     index = parentIndex;                    // Update index to parent
                 }
                 else
                 {
-                    break; // Max-heap property satisfied
+                    break; // Heap property satisfied
                 }
             }
         }
@@ -54,7 +64,7 @@ public:
         }
         else
         {
-            cout << "Queue is empty! Cannot DeQueue.\n";
+            std::cout << "Queue is empty! Cannot DeQueue.\n";
         }
     };
 
@@ -64,22 +74,22 @@ public:
         {
             for (const T &item : queue)
             {
-                cout << item << "\n";
+                std::cout << item << "\n";
             }
         }
         else
         {
-            cout << "No items in Queue!\n";
+            std::cout << "No items in Queue!\n";
         }
     }
 
-    vector<T> &GetQueue()
+    std::vector<T> &GetQueue()
     {
         return queue;
     }
 
     // Mutex is used to ensure thread safety during emergency routing process
-    mutex &GetMutex()
+    std::mutex &GetMutex()
     {
         return *queueMutex;
     }
@@ -90,11 +100,13 @@ public:
     }
 
 private:
-    vector<T> queue{};
-    shared_ptr<mutex> queueMutex = make_shared<mutex>();
+    std::vector<T> queue{};
+
+    // Mutex for Thread Safety
+    std::shared_ptr<std::mutex> queueMutex = std::make_shared<std::mutex>();
 
     // Queue type
-    string type = "MIN";
+    std::string type = "MIN";
 
     // Comparison function for items of type T
     bool compareItems(const T &a, const T &b)

@@ -1,3 +1,15 @@
+/*
+Copyright (c) 2024, Matthew McCann
+All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to no conditions.
+*/
+
 #include "App.h"
 #include "MainFrame.h"
 #include "UI/Dialogs/LoginDialog.h"
@@ -6,8 +18,6 @@
 #include <memory>
 
 wxIMPLEMENT_APP(App);
-
-using namespace std;
 
 void App::Restart()
 {
@@ -31,7 +41,7 @@ App &App::GetInstance()
 
 bool App::OnInit()
 {
-    // Initialise the Database - Using Smart Pointers here to prevent memory leaks.
+    // Initialise the Database - Using Smart Pointers here to avoid manual memory cleanup, although later on I create a Raw Pointer but its the thought that counts.
     unique_ptr<Database> database = make_unique<Database>();
     if (database->GetUserCount() == 0)
     {
@@ -55,12 +65,12 @@ bool App::OnInit()
     3. Set an active user instance within MainFrame, this is then handled and user is created with correct class i.e. CallHandler, EmergencyResponder
     */
     bool loggedIn = false;
-    User user((string)login.getUsername());
+    User user((std::string)login.getUsername());
     while (!loggedIn)
     {
         if (login.ShowModal() == wxID_OK)
         {
-            if (user.Login((string)login.getUsername(), (string)login.getPassword()))
+            if (user.Login((std::string)login.getUsername(), (std::string)login.getPassword()))
             {
                 loggedIn = true;
                 mainFrame->SetViewType(user.getRole());

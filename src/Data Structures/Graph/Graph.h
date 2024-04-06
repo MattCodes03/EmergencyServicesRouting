@@ -1,3 +1,15 @@
+/*
+Copyright (c) 2024, Matthew McCann
+All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to no conditions.
+*/
+
 #ifndef GRAPH_H
 #define GRAPH_H
 
@@ -9,8 +21,6 @@
 #include <cmath>
 #include <mutex>
 #include <memory>
-
-using namespace std;
 
 class Graph
 {
@@ -29,7 +39,6 @@ public:
     @param  destination Destinations Nodes ID
     @param  weight  Weight of this edge
      */
-
     void AddEdge(int source, int destination, int weight)
     {
         // Check if the edge already exists
@@ -46,16 +55,26 @@ public:
         sort(adjacencyList[source].begin(), adjacencyList[source].end());
     }
 
+    /*
+Function will add node to graph
+@param  node Node being added
+ */
+
     void AddNode(const Node &node)
     {
         nodes[node.GetID()] = node;
     };
 
+    /*
+Function will remove node to graph
+@param  id ID of node to be removed
+ */
     void RemoveNode(int id)
     {
         nodes[id] = Node(id, 42);
     }
 
+    // Function will clear the graph
     void ClearGraph()
     {
         for (int i = 0; i < nodes.size(); ++i)
@@ -87,17 +106,17 @@ public:
     }
 
     // Int 1 is Source Node (Emergency or Ambulance), Int 2 is Closest Ambulance or Hospital found by the algorithm
-    pair<int, int> Dijkstra(int source)
+    std::pair<int, int> Dijkstra(int source)
     {
         int size = adjacencyList.size();
-        vector<int> distance(size, numeric_limits<int>::max());
-        vector<int> parent(size, -1);
-        vector<bool> visited(size, false);
+        std::vector<int> distance(size, numeric_limits<int>::max());
+        std::vector<int> parent(size, -1);
+        std::vector<bool> visited(size, false);
 
         distance[source] = 0;
 
         // Use the custom priority queue
-        Queue<pair<int, int>> priorityQueue;
+        Queue<std::pair<int, int>> priorityQueue;
         priorityQueue.SetQueueType("MIN"); // Set the queue type to min-heap
 
         // Enqueue the source node
@@ -154,18 +173,19 @@ public:
         return {source, destination};
     }
 
-    vector<Node> GetNodes() const
+    std::vector<Node> GetNodes() const
     {
 
         return this->nodes;
     };
-    vector<vector<pair<int, int>>> GetAdjacencyList() const
+
+    std::vector<std::vector<std::pair<int, int>>> GetAdjacencyList() const
     {
 
         return this->adjacencyList;
     };
 
-    mutex &GetMutex()
+    std::mutex &GetMutex()
     {
         return *graphMutex;
     }
@@ -173,10 +193,11 @@ public:
     Queue<Emergency> queue;
 
 private:
-    vector<vector<pair<int, int>>> adjacencyList;
+    std::vector<std::vector<std::pair<int, int>>> adjacencyList;
     vector<Node> nodes;
 
-    shared_ptr<mutex> graphMutex = make_shared<mutex>();
+    // Mutex used for Thread Safety
+    std::shared_ptr<std::mutex> graphMutex = std::make_shared<std::mutex>();
 };
 
 #endif

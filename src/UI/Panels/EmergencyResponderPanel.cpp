@@ -1,3 +1,15 @@
+/*
+Copyright (c) 2024, Matthew McCann
+All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to no conditions.
+*/
+
 #include "CustomPanels.h"
 #include "../Dialogs/AmbulanceSelectDialog.h"
 #include <chrono>
@@ -16,7 +28,7 @@ void CustomPanels::EmergencyResponderPanel(wxWindow *parent)
         ambulanceSelect.Center();
 
         // Get Details from Database
-        vector<Ambulance> ambulances = parentFrame->customPanels->GetDatabase().GetAmbulances();
+        std::vector<Ambulance> ambulances = parentFrame->customPanels->GetDatabase().GetAmbulances();
 
         while (userRef.unitNumber <= 0)
         {
@@ -64,15 +76,9 @@ void CustomPanels::EmergencyResponderPanel(wxWindow *parent)
         // Adding the text to the sizer
         sizer->Add(text, 0, wxALIGN_CENTER | wxALL, 10);
 
-        // Arrive at Emergency Button
-        wxButton *arriveButton = new wxButton(panel, wxID_ANY, _("Arrived at Emergency"));
-        arriveButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, &userRef, parent](wxCommandEvent &event)
-                           { userRef.ArriveAtEmergency(*parent); });
-
-        // Generate Hospital Route Button
-        wxButton *generateRouteButton = new wxButton(panel, wxID_ANY, _("Generate Hospital Route"));
-        generateRouteButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, &userRef, parent](wxCommandEvent &event)
-                                  { userRef.GenerateHospitalRoute(*parent); });
+        // Arrive
+        RouteButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, &userRef, parent](wxCommandEvent &event)
+                          { userRef.GenerateHospitalRoute(*parent); });
 
         // Mark Emergency as Complete Button
         wxButton *completeEmergencyButton = new wxButton(panel, wxID_ANY, _("Complete Emergency"));
@@ -92,14 +98,15 @@ void CustomPanels::EmergencyResponderPanel(wxWindow *parent)
         panel->SetSizer(sizer);
 
         // Refreshing the layout
-        panel->Layout();
+        panel->L
+        ayout();
 
         // Check for current emergency thread
         thread([this, &userRef, parent]()
                {
-               while (!terminateThread.load(memory_order_acquire))
+               while (!terminateThread.load(std::memory_order_acquire))
                {
-                   cout << "Thread Call!" << endl;
+                   std::cout << "Thread Call!" << endl;
 
                    // Route emergencies Asynchronously
                    auto asyncFunc = [this, &userRef](wxWindow *p)
@@ -111,16 +118,16 @@ void CustomPanels::EmergencyResponderPanel(wxWindow *parent)
                    };
 
                 {
-                lock_guard<std::mutex> lock(mtx); // Lock the mutex before accessing shared data
+                std::lock_guard<std::mutex> lock(mtx); // Lock the mutex before accessing shared data
                 if (terminateThread.load(std::memory_order_relaxed)) // Re-check termination flag inside the critical section
                     break; // Exit loop if termination signal received
                 }
 
-                   async(launch::async, asyncFunc, parent).wait();
+                   std::async(launch::async, asyncFunc, parent).wait();
 
-                   this_thread::sleep_for(chrono::seconds(5));
+                   std::this_thread::sleep_for(chrono::seconds(5));
                }
-               cout << "Thread terminated!\n"; })
+               std::cout << "Thread terminated!\n"; })
             .detach();
     }
 }

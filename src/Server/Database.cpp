@@ -1,3 +1,15 @@
+/*
+Copyright (c) 2024, Matthew McCann
+All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to no conditions.
+*/
+
 #include "Database.h"
 #include <iostream>
 
@@ -6,6 +18,7 @@ Database::Database()
     database = new SQLite::Database("EmergencyRouting.db3", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
 };
 
+// Function will count number of users in user table and return a count. Used to determine if the database is populated
 int Database::GetUserCount()
 {
     int count = 0;
@@ -24,6 +37,7 @@ int Database::GetUserCount()
     return count;
 }
 
+// Setup Database Tables
 void Database::InitializeDatabase()
 {
     database->exec("DROP TABLE IF EXISTS users");
@@ -51,16 +65,17 @@ void Database::InitializeDatabase()
     GeneratePsuedoData();
 };
 
+/*
+Function will add listener to database.
+@param  listener - Pointer to object that will listen to the database
+
+ */
 void Database::AddListener(DatabaseListener *listener)
 {
     listeners.push_back(listener);
 }
 
-// void Database::RemoveListener(DatabaseListener *listener)
-// {
-//     listeners.erase(remove(listeners.begin(), listeners.end(), listener), listeners.end());
-// }
-
+// Function will send a notification to all database listeners that the database has changed
 void Database::NotifyListeners()
 {
     for (auto listener : listeners)
@@ -69,7 +84,14 @@ void Database::NotifyListeners()
     }
 }
 
-void Database::UpdateRecord(const string &tableName, const vector<string> &columns, const vector<string> &values, const string &conditions)
+/*
+Function will update chosen values in the database
+@param  tableName - Name of table that is being updated
+@param  columns - Vector of column(s) that will be updated
+@param  values - Vector of new value(s)
+@param  conditions - Condition of update
+ */
+void Database::UpdateRecord(const std::string &tableName, const std::vector<std::string> &columns, const std::vector<std::string> &values, const std::string &conditions)
 {
     if (columns.size() != values.size())
     {
@@ -78,7 +100,7 @@ void Database::UpdateRecord(const string &tableName, const vector<string> &colum
 
     SQLite::Transaction transaction(*database);
 
-    stringstream query;
+    std::stringstream query;
     query << "UPDATE " << tableName << " SET ";
 
     for (size_t i = 0; i < columns.size(); i++)
@@ -109,9 +131,15 @@ void Database::UpdateRecord(const string &tableName, const vector<string> &colum
 
     NotifyListeners();
 };
-void Database::InsertRecord(const string &tableName, const vector<string> &values)
+
+/*
+Function will insert new values in the database
+@param  tableName - Name of table that is being updated
+@param  values - Vector of new value(s)
+ */
+void Database::InsertRecord(const std::string &tableName, const std::vector<std::string> &values)
 {
-    stringstream query;
+    std::stringstream query;
     query << "INSERT INTO" << tableName << "VALUES (";
     for (size_t i = 0; i < values.size(); i++)
     {
@@ -155,7 +183,11 @@ void Database::GeneratePsuedoData()
     psuedoDataTransaction.commit();
 };
 
-pair<int, int> Database::ConvertLocation(const string &location)
+/*
+Function will take location in format (X, Y) and convert it into a std::pair format for use
+@param  location - (X, Y) location string
+ */
+std::pair<int, int> Database::ConvertLocation(const std::string &location)
 {
     // Check if the format is correct
     if (location.size() < 5 || location[0] != '(' || location[location.size() - 1] != ')' || location.find(',') == string::npos)
@@ -167,7 +199,7 @@ pair<int, int> Database::ConvertLocation(const string &location)
     // Extract coordinates from the format "(x, y)"
     int x, y;
     char discard;
-    istringstream iss(location.substr(1, location.size() - 2)); // Exclude parentheses
+    std::istringstream iss(location.substr(1, location.size() - 2)); // Exclude parentheses
     if (!(iss >> x >> discard >> y) || discard != ',')
     {
         // Handle extraction failure
@@ -177,13 +209,14 @@ pair<int, int> Database::ConvertLocation(const string &location)
     return {x, y};
 };
 
-vector<Emergency> Database::GetEmergencies()
+// Function will return a vector of all emergencies in the database
+std::vector<Emergency> Database::GetEmergencies()
 {
-    vector<Emergency> emergencies;
+    std::vector<Emergency> emergencies;
     SQLite::Statement query(*database, "SELECT * FROM emergencies");
     while (query.executeStep())
     {
-        pair<int, int> location = ConvertLocation((string)query.getColumn(1));
+        std::pair<int, int> location = ConvertLocation((string)query.getColumn(1));
         bool respondedTo = query.getColumn(3).getInt() != 0;
         bool complete = query.getColumn(4).getInt() != 0;
 
@@ -193,13 +226,14 @@ vector<Emergency> Database::GetEmergencies()
     return emergencies;
 };
 
-vector<Emergency> Database::GetUnRespondedEmergencies()
+// Function will return a vector of all emergencies in the database where respondedTo value is false
+std::vector<Emergency> Database::GetUnRespondedEmergencies()
 {
-    vector<Emergency> emergencies;
+    std::vector<Emergency> emergencies;
     SQLite::Statement query(*database, "SELECT * FROM emergencies WHERE respondedTo = False");
     while (query.executeStep())
     {
-        pair<int, int> location = ConvertLocation((string)query.getColumn(1));
+        std::pair<int, int> location = ConvertLocation((string)query.getColumn(1));
         bool respondedTo = query.getColumn(3).getInt() != 0;
         bool complete = query.getColumn(4).getInt() != 0;
 
@@ -209,13 +243,14 @@ vector<Emergency> Database::GetUnRespondedEmergencies()
     return emergencies;
 };
 
-vector<Ambulance> Database::GetAmbulances()
+// Function will return a vector of all ambulances in the database
+std::vector<Ambulance> Database::GetAmbulances()
 {
-    vector<Ambulance> ambulances;
+    std::vector<Ambulance> ambulances;
     SQLite::Statement query(*database, "SELECT * FROM ambulance");
     while (query.executeStep())
     {
-        pair<int, int> location = ConvertLocation((string)query.getColumn(1));
+        std::pair<int, int> location = ConvertLocation((string)query.getColumn(1));
         bool status = query.getColumn(2).getInt() != 0;
         bool available = query.getColumn(3).getInt() != 0;
         ambulances.push_back(Ambulance(query.getColumn(0), location, status, available, query.getColumn(4).getInt()));
@@ -224,13 +259,14 @@ vector<Ambulance> Database::GetAmbulances()
     return ambulances;
 };
 
-vector<Hospital> Database::GetHospitals()
+// Function will return a vector of all hospitals in the database
+std::vector<Hospital> Database::GetHospitals()
 {
-    vector<Hospital> hospitals;
+    std::vector<Hospital> hospitals;
     SQLite::Statement query(*database, "SELECT * FROM hospital");
     while (query.executeStep())
     {
-        pair<int, int> location = ConvertLocation((string)query.getColumn(2));
+        std::pair<int, int> location = ConvertLocation((string)query.getColumn(2));
         bool status = query.getColumn(3).getInt() != 0;
         hospitals.push_back(Hospital(query.getColumn(0), (string)query.getColumn(1), location, status));
     }
