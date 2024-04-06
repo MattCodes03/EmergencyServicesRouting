@@ -76,9 +76,15 @@ void CustomPanels::EmergencyResponderPanel(wxWindow *parent)
         // Adding the text to the sizer
         sizer->Add(text, 0, wxALIGN_CENTER | wxALL, 10);
 
-        // Arrive
-        RouteButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, &userRef, parent](wxCommandEvent &event)
-                          { userRef.GenerateHospitalRoute(*parent); });
+        // Arrive at Emergency Button
+        wxButton *arriveButton = new wxButton(panel, wxID_ANY, _("Arrived at Emergency"));
+        arriveButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, &userRef, parent](wxCommandEvent &event)
+                           { userRef.ArriveAtEmergency(*parent); });
+
+        // Generate Hospital Route Button
+        wxButton *generateRouteButton = new wxButton(panel, wxID_ANY, _("Generate Hospital Route"));
+        generateRouteButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, &userRef, parent](wxCommandEvent &event)
+                                  { userRef.GenerateHospitalRoute(*parent); });
 
         // Mark Emergency as Complete Button
         wxButton *completeEmergencyButton = new wxButton(panel, wxID_ANY, _("Complete Emergency"));
@@ -98,8 +104,7 @@ void CustomPanels::EmergencyResponderPanel(wxWindow *parent)
         panel->SetSizer(sizer);
 
         // Refreshing the layout
-        panel->L
-        ayout();
+        panel->Layout();
 
         // Check for current emergency thread
         thread([this, &userRef, parent]()

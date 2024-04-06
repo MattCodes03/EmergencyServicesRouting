@@ -90,16 +90,16 @@ void Map::SetupGraph()
 {
     try
     {
-        // Clear the grpah in-case any junk values are left behind
+
         graph.ClearGraph();
 
-        // Create smart pointer to database, this means I don't need to worry about memory clean up
+        // Smart Pointer for auto memory management
         unique_ptr<Database> database = make_unique<Database>();
 
-        // If Map Type is Handler display all ambulances and emergencies that have been accpetd and prioritised
+        // If the map type is Handler draw all ambulances, all emergencies that have been accepted
         if (mapType == "HANDLER")
         {
-            std::vector<Ambulance> ambulances;
+            vector<Ambulance> ambulances;
 
             for (Ambulance &ambulance : database->GetAmbulances())
             {
@@ -109,60 +109,70 @@ void Map::SetupGraph()
                     ambulances.push_back(ambulance);
                 }
             };
-            using namespace std;
-            for (Ambulance ambulance : ambulances)
+
+            for (Emergency &emergency : database->GetEmergencies())
             {
-                if (ambulance.available)
+                if (!emergency.complete && emergency.respondedTo)
                 {
-                    graph.AddEdge(emergency.emergencyNumber, ambulance.unitNumber, graph.CalculateDistance(emergency.location, ambulance.location));
+                    graph.AddNode(Node(emergency.emergencyNumber, any_cast<Emergency>(emergency)));
+                    for (Ambulance ambulance : ambulances)
+                    {
+                        if (ambulance.available)
+                        {
+                            graph.AddEdge(emergency.emergencyNumber, ambulance.unitNumber, graph.CalculateDistance(emergency.location, ambulance.location));
+                        }
+                    }
+                }
+            }
+        }
+
+        // If Map Type is ambulance draw the users current ambulance, current emergency and all hospitals
+        if (mapType == "AMBULANCE")
+        {
+            CustomPanels *parentFrame = dynamic_cast<CustomPanels *>(parentPanel);
+            if (parentFrame)
+            {
+                // Get the active ambulance and add it to the graph
+                Ambulance activeAmbulance;
+
+                for (Ambulance &ambulance : database->GetAmbulances())
+                {
+                    if (ambulance.unitNumber == any_cast<EmergencyResponder>(parentFrame->user).unitNumber)
+                    {
+                        graph.AddNode(Node(ambulance.unitNumber, any_cast<Ambulance>(ambulance)));
+                        activeAmbulance = ambulance;
+                        break;
+                    }
+                };
+
+                // Add all available hospitals to the graph and create an edge between each and the user's active ambulance
+                for (Hospital &hospital : database->GetHospitals())
+                {
+                    if (hospital.status)
+                    {
+                        graph.AddNode(Node(hospital.hospitalNumber, any_cast<Hospital>(hospital)));
+                        graph.AddEdge(activeAmbulance.unitNumber, hospital.hospitalNumber, graph.CalculateDistance(hospital.location, activeAmbulance.location));
+                    }
+                }
+
+                // Plot the ambulance's current emergency
+                for (Emergency &emergency : database->GetEmergencies())
+                {
+                    if (!emergency.complete && emergency.emergencyNumber == activeAmbulance.activeEmergency)
+                    {
+                        graph.AddNode(Node(emergency.emergencyNumber, any_cast<Emergency>(emergency)));
+
+                        graph.AddEdge(emergency.emergencyNumber, activeAmbulance.unitNumber, graph.CalculateDistance(activeAmbulance.location, emergency.location));
+                        AddEdge(emergency.location, activeAmbulance.location);
+                    }
                 }
             }
         }
     }
-}
-
-// If Map Type is Ambulance display only current users Ambulance, current emergency and all hospitals
-if (mapType == "AMBULANCE")
-{
-    CustomPanels *parentFrame = dynamic_cast<CustomPanels *>(parentPanel);
-    if (parentFrame)
+    catch (const std::exception &e)
     {
-        // Get the active ambulance and add it to the graph
-        Ambulance activeAmbulance;
-
-        for (Ambulance &ambulance : database->GetAmbulances())
-        {
-            if (ambulance.unitNumber == any_cast<EmergencyResponder>(parentFrame->user).unitNumber)
-            {
-                graph.AddNode(Node(ambulance.unitNumber, any_cast<Ambulance>(ambulance)));
-                activeAmbulance = ambulance;
-                break;
-            }
-        };
-
-        // Add all available hospitals to the graph and create an edge between each and the user's active ambulance
-                for (using namespace std;
+        std::cerr << "Error setting up graph: " << e.what() << '\n';
     }
-}
-
-// Plot the ambulance's current emergency
-for (Emergency &emergency : database->GetEmergencies())
-{
-    if (!emergency.complete && emergency.emergencyNumber == activeAmbulance.activeEmergency)
-    {
-        graph.AddNode(Node(emergency.emergencyNumber, any_cast<Emergency>(emergency)));
-
-        graph.AddEdge(emergency.emergencyNumber, activeAmbulance.unitNumber, graph.CalculateDistance(activeAmbulance.location, emergency.location));
-        AddEdge(emergency.location, activeAmbulance.location);
-    }
-}
-}
-}
-}
-catch (const std::exception &e)
-{
-    std::cerr << "Error setting up graph: " << e.what() << '\n';
-}
 }
 
 // Function will first QuickSort the edges in the graph to optmise rendering process and will then draw all nodes and edges onto the map

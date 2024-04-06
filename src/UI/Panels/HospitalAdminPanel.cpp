@@ -95,7 +95,8 @@ void CustomPanels::HospitalAdminPanel(wxWindow *parent)
 
         wxButton *changeStatusButton = new wxButton(panel, wxID_ANY, _("Update Hospital Status"));
         changeStatusButton->Bind(wxEVT_COMMAND_BUTTON_CLICKED, [this, &userRef, parent](wxCommandEvent &event)
-                                 { userRef.UpdateHospitalStatus(*parent); });
+                                 { userRef.UpdateHospitalStatus(*parent);
+                                  panel->Layout(); });
 
         sizer->Add(changeStatusButton, 0, wxALIGN_CENTER | wxALL, 10);
 
