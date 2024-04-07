@@ -17,12 +17,14 @@ void UserInput::initialize(wxWindow *parent, const wxString &label, long style)
     inputSizer = new wxBoxSizer(wxHORIZONTAL);
     inputLabel = new wxStaticText(parent, wxID_ANY, label);
 
-    inputLabel->SetMinSize(wxSize(60, inputLabel->GetMinSize().y));
-    inputSizer->Add(inputLabel);
+    inputLabel->SetMinSize(wxSize(80, inputLabel->GetMinSize().y));
+    inputSizer->Add(inputLabel, 0);
+
+    inputSizer->AddSpacer(10);
 
     inputCtrl = new wxTextCtrl(parent, wxID_ANY);
     inputCtrl->SetWindowStyle(style);
-    inputSizer->Add(inputCtrl, 1);
+    inputSizer->Add(inputCtrl, 5);
 };
 
 UserInput::UserInput(wxWindow *parent, const wxString &label, long style)

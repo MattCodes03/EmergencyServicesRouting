@@ -166,13 +166,19 @@ void Database::GeneratePsuedoData()
     database->exec("INSERT INTO users VALUES (3, \"Taylor\", \"Hay\", \"THay1402\", \"Test123\", \"HOSPITAL\")");
 
     // Fake Emergencies - Update this with better data once app development is further along.
-    database->exec("INSERT INTO emergencies VALUES (1, \"(40, 150)\", 1, 0, 0, \"Test1\")");
-    database->exec("INSERT INTO emergencies VALUES (2, \"(200, 300)\", 1, 0, 0, \"Test2\")");
-    database->exec("INSERT INTO emergencies VALUES (3, \"(50, 60)\", 1, 0, 0, \"Test3\")");
+    database->exec("INSERT INTO emergencies VALUES (1, \"(40, 150)\", 1, 0, 0, \"Hi, I'm calling because my neighbor has twisted her ankle while gardening. She's in pain and unable to put weight on it. We think she may need medical attention to assess if it's broken.\")");
+    database->exec("INSERT INTO emergencies VALUES (2, \"(200, 300)\", 1, 0, 0, \"We need an ambulance urgently! My husband collapsed at home and is unconscious. He has a history of heart problems, and we're really worried. Please send help right away!\")");
+    database->exec("INSERT INTO emergencies VALUES (3, \"(50, 60)\", 1, 0, 0, \"There's been a car accident on the M8! Multiple vehicles are involved, and there are injured people trapped inside their cars. We need paramedics on the scene immediately. It looks serious!\")");
+    database->exec("INSERT INTO emergencies VALUES (4, \"(300, 150)\", 1, 0, 0, \"Help! My sister is having difficulty breathing, and her lips are turning blue. She has a severe allergy, and we suspect she's having an anaphylactic reaction. Please send an ambulance right away!\")");
+    database->exec("INSERT INTO emergencies VALUES (5, \"(300, 200)\", 1, 0, 0, \"This is an emergency! My father collapsed at home, and he's not breathing. We've tried CPR, but we can't revive him. Please hurry, he's not responsive, and we're losing precious time!\")");
 
     // Fake Ambulances
     database->exec("INSERT INTO ambulance VALUES (8, \"(50, 50)\", 1, 1, 0)");
     database->exec("INSERT INTO ambulance VALUES (9, \"(100, 80)\", 1, 1, 0)");
+    database->exec("INSERT INTO ambulance VALUES (10, \"(300, 70)\", 1, 1, 0)");
+    database->exec("INSERT INTO ambulance VALUES (11, \"(200, 80)\", 1, 1, 0)");
+    database->exec("INSERT INTO ambulance VALUES (12, \"(40, 300)\", 1, 1, 0)");
+    database->exec("INSERT INTO ambulance VALUES (13, \"(350, 125)\", 1, 1, 0)");
 
     // Fake Hospitals
     database->exec("INSERT INTO hospital VALUES (15, \"Univeristy Hospital Crosshouse\", \"(60, 300)\", 1, 1234)");

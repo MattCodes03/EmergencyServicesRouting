@@ -25,7 +25,7 @@ EmergencyDialog::EmergencyDialog(wxWindow *parent, wxWindowID id,
 {
     wxBoxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
 
-    description = new wxStaticText(this, wxID_ANY, emergencyDescription);
+    description = new wxTextCtrl(this, wxID_ANY, emergencyDescription, wxDefaultPosition, wxSize(500, 300), wxTE_MULTILINE | wxTE_READONLY);
     mainSizer->Add(description, 0, wxALIGN_CENTER);
 
     wxStaticText *buttonLabel = new wxStaticText(this, wxID_ANY, "Severity");

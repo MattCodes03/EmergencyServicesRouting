@@ -49,7 +49,7 @@ bool App::OnInit()
     }
 
     // Setup the GUI
-    unique_ptr<MainFrame> mainFrame = make_unique<MainFrame>("Emergency Services Routing");
+    unique_ptr<MainFrame> mainFrame = make_unique<MainFrame>("PriorityEMS");
     mainFrame->SetClientSize(800, 600);
     mainFrame->SetMinSize(mainFrame->GetSize());
     mainFrame->SetMaxSize(mainFrame->GetSize());

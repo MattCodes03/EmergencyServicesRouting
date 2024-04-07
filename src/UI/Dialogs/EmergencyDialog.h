@@ -34,7 +34,7 @@ public:
         this->emergencyDescription = description;
         if (this->description)
         {
-            this->description->SetLabel(emergencyDescription);
+            this->description->SetValue(emergencyDescription);
         }
     };
     void SetEmergency(const Emergency &emergency) { this->emergency = emergency; };
@@ -47,7 +47,7 @@ private:
     CallHandler userRef;
     wxString emergencyDescription = "DEFAULT DESCRIPTION";
 
-    wxStaticText *description;
+    wxTextCtrl *description;
 
     wxButton *lowSevereButton;
     wxButton *medSevereButton;

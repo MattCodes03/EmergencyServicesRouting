@@ -177,27 +177,13 @@ Function will remove node to graph
     {
 
         return this->nodes;
+        Approach
+            std::vector<std::vector<std::pair<int, int>>>
+                adjacencyList;
+        vector<Node> nodes;
+
+        // Mutex used for Thread Safety
+        std::shared_ptr<std::mutex> graphMutex = std::make_shared<std::mutex>();
     };
-
-    std::vector<std::vector<std::pair<int, int>>> GetAdjacencyList() const
-    {
-
-        return this->adjacencyList;
-    };
-
-    std::mutex &GetMutex()
-    {
-        return *graphMutex;
-    }
-
-    Queue<Emergency> queue;
-
-private:
-    std::vector<std::vector<std::pair<int, int>>> adjacencyList;
-    vector<Node> nodes;
-
-    // Mutex used for Thread Safety
-    std::shared_ptr<std::mutex> graphMutex = std::make_shared<std::mutex>();
-};
 
 #endif
