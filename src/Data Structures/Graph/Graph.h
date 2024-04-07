@@ -34,11 +34,10 @@ public:
     }
 
     /*
-    Function will add edge to the graph.
-    @param  source  Source Nodes ID
-    @param  destination Destinations Nodes ID
-    @param  weight  Weight of this edge
-     */
+    Function for adding eddge to graph
+    @param destination Destinations Nodes ID
+        @param weight Weight of this edge
+    */
     void AddEdge(int source, int destination, int weight)
     {
         // Check if the edge already exists
@@ -115,24 +114,23 @@ Function will remove node to graph
 
         distance[source] = 0;
 
-        // Use the custom priority queue
-        Queue<std::pair<int, int>> priorityQueue;
-        priorityQueue.SetQueueType("MIN"); // Set the queue type to min-heap
-
-        // Enqueue the source node
-        priorityQueue.EnQueue({0, source}); // {distance, node}
-
-        while (!priorityQueue.GetQueue().empty())
+        while (true)
         {
-            // Extract the node with the minimum distance
-            auto minDistanceNode = priorityQueue.GetQueue().front();
-            priorityQueue.DeQueue();
-            int minDistance = minDistanceNode.first;
-            int minDistanceIndex = minDistanceNode.second;
+            int minDistanceIndex = -1;                    // Index of Node with the lowest distance to source
+            int minDistance = numeric_limits<int>::max(); // Lowest distance value found so far, initialize to maximum value
 
-            // If the node is already visited, continue to the next node
-            if (visited[minDistanceIndex])
-                continue;
+            // Find the node with the minimum distance among unvisited nodes
+            for (int i = 0; i < size; i++)
+            {
+                if (!visited[i] && distance[i] < minDistance)
+                {
+                    minDistance = distance[i];
+                    minDistanceIndex = i;
+                }
+            }
+
+            if (minDistanceIndex == -1) // If no unvisited nodes found
+                break;
 
             visited[minDistanceIndex] = true; // Mark the current node as visited
 
@@ -141,11 +139,10 @@ Function will remove node to graph
             {
                 int nodeID = neighbor.first;
                 int weight = neighbor.second;
-                if (!visited[nodeID] && minDistance + weight < distance[nodeID])
+                if (!visited[nodeID] && distance[minDistanceIndex] + weight < distance[nodeID])
                 {
-                    distance[nodeID] = minDistance + weight;
+                    distance[nodeID] = distance[minDistanceIndex] + weight;
                     parent[nodeID] = minDistanceIndex;
-                    priorityQueue.EnQueue({distance[nodeID], nodeID}); // Enqueue the updated distance
                 }
             }
         }
@@ -177,13 +174,24 @@ Function will remove node to graph
     {
 
         return this->nodes;
-        Approach
-            std::vector<std::vector<std::pair<int, int>>>
-                adjacencyList;
-        vector<Node> nodes;
+    }
 
-        // Mutex used for Thread Safety
-        std::shared_ptr<std::mutex> graphMutex = std::make_shared<std::mutex>();
-    };
+    // Mutex is used to ensure thread safety during emergency routing process
+    std::mutex &GetMutex()
+    {
+        return *graphMutex;
+    }
+
+    vector<vector<pair<int, int>>> GetAdjacencyList() const { return this->adjacencyList; };
+
+    Queue<Emergency> queue;
+
+private:
+    std::vector<std::vector<std::pair<int, int>>> adjacencyList;
+    vector<Node> nodes;
+
+    // Mutex used for Thread Safety
+    std::shared_ptr<std::mutex> graphMutex = std::make_shared<std::mutex>();
+};
 
 #endif
